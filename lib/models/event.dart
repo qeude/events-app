@@ -24,7 +24,21 @@ class Event {
     );
   }
 
+  factory Event.fromDatabaseJson(Map<String, dynamic> data) => Event(
+      data['name'],
+      DateTime.parse(data['date']),
+      id:data['id'], 
+      description: data['description'],
+      complete: data['complete'] == 0 ? false : true,
+  );
 
+  Map<String, dynamic> toDatabaseJson() => {
+    "id": this.id,
+    "name":this.name,
+    "description": this.description,
+    "date":this.date.toString(), 
+    "complete": this.complete ==false ? 0 : 1,
+  };
   @override
   int get hashCode => complete.hashCode ^ name.hashCode ^ date.hashCode ^ description.hashCode ^ complete.hashCode ^ id.hashCode;
 
