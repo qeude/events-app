@@ -17,4 +17,5 @@ class EventsStateError extends EventsState{
 
   EventsStateError(this.error);
 }
+
 class EventsStateEmpty extends EventsState{}
