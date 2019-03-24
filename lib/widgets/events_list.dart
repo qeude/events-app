@@ -43,7 +43,9 @@ class BuildCard extends StatelessWidget{
         semanticContainer: true,
         clipBehavior: Clip.antiAliasWithSaveLayer,
         margin: EdgeInsets.only(bottom: 20.0),
-        child: Container(
+        child: Hero(
+          tag: 'eventImg${item.id}',
+          child : Container(
           height: 350.0,
           decoration: BoxDecoration(
             image: DecorationImage(
@@ -59,15 +61,19 @@ class BuildCard extends StatelessWidget{
             crossAxisAlignment: CrossAxisAlignment.start,
             children: <Widget>[
               Container(
-                child: Text(item.name, style: TextStyle(color: Colors.white, fontSize: 50.0, shadows: [Shadow(color: Colors.black12, blurRadius: 4.0)]),),
+                child: Material(
+                        color: Colors.transparent,
+                        child : Text(item.name, style: TextStyle(color: Colors.white, fontSize: 50.0, shadows: [Shadow(color: Colors.black12, blurRadius: 4.0)]),)),
               ),
               Container(
-                child: Text("In ${item.date.difference(DateTime.now()).inDays} days", style: TextStyle(color:Colors.white, fontSize: 20.0, shadows: [Shadow(color: Colors.black12, blurRadius: 4.0)]))
+                child: Material(
+                        color: Colors.transparent,
+                        child : Text("In ${item.date.difference(DateTime.now()).inDays} days", style: TextStyle(color:Colors.white, fontSize: 20.0, shadows: [Shadow(color: Colors.black12, blurRadius: 4.0)])))
               )
             ],
           )
         ),
-      )
+      ))
     );
   }
 }

@@ -5,9 +5,10 @@ import 'package:events_app/utils/constants.dart';
 import 'package:events_app/blocs/events/events.dart';
 
 class App extends StatelessWidget {
+  final eventsBloc = EventsBloc();
+
   @override
   Widget build(BuildContext context) {
-    final eventsBloc = EventsBloc();
     return BlocProvider(
       bloc: eventsBloc,
       child: MaterialApp(

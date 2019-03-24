@@ -13,6 +13,7 @@ class EventsScreen extends StatefulWidget {
 class _EventsScreenState extends State<EventsScreen> {
   EventsBloc eventsBloc;
 
+
   @override
   void initState() {
     super.initState();
@@ -38,6 +39,7 @@ class _EventsScreenState extends State<EventsScreen> {
                 ],
                 child :Scaffold(
                 appBar: AppBar(
+                  centerTitle: true,
                   backgroundColor: Colors.transparent,
                   elevation: 0.0,
                   title: Text(
