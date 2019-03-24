@@ -1,7 +1,10 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
 
 import 'package:events_app/models/models.dart';
 import 'package:events_app/utils/constants.dart';
+
+import 'package:events_app/pages/events_details_screen.dart';
 class EventsList extends StatelessWidget {
   final bool visible;
   final List<Event> eventsList;
@@ -26,14 +29,15 @@ class EventsList extends StatelessWidget {
   }
 }
 
-
 class BuildCard extends StatelessWidget{
   final Event item;
   const BuildCard({this.item});
   @override
   Widget build(BuildContext context) {
     return GestureDetector(
-      onTap: () => print(item.id),
+      onTap: () async => await Navigator.of(context).push(MaterialPageRoute(builder: (_){
+        return EventsDetailsScreen(id: item.id);
+      })),
       child: Card(
         shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(15.0)),
         semanticContainer: true,
