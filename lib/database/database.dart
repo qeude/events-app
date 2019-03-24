@@ -37,9 +37,18 @@ class DatabaseProvider {
         "date TEXT,"
         "complete INTEGER "
         ")");
-    await database.insert(eventTABLE, Event('Croatie', DateTime.now()).toDatabaseJson());
-    await database.insert(eventTABLE, Event('Suisse', DateTime.now()).toDatabaseJson());
-    await database.insert(eventTABLE, Event('Italie', DateTime.now()).toDatabaseJson());
+    await database.insert(eventTABLE, Event('Croatie', DateTime(2019, 06, 12)).toDatabaseJson());
+    await database.insert(eventTABLE, Event('Suisse', DateTime(2019, 07, 13)).toDatabaseJson());
+    await database.insert(eventTABLE, Event('Italie', DateTime(2019, 04, 22)).toDatabaseJson());
+    await database.insert(eventTABLE, Event('Croatie', DateTime(2019, 06, 12)).toDatabaseJson());
+    await database.insert(eventTABLE, Event('Suisse', DateTime(2019, 07, 13)).toDatabaseJson());
+    await database.insert(eventTABLE, Event('Italie', DateTime(2019, 04, 22)).toDatabaseJson());
+    await database.insert(eventTABLE, Event('Croatie', DateTime(2019, 06, 12)).toDatabaseJson());
+    await database.insert(eventTABLE, Event('Suisse', DateTime(2019, 07, 13)).toDatabaseJson());
+    await database.insert(eventTABLE, Event('Italie', DateTime(2019, 04, 22)).toDatabaseJson());
+    await database.insert(eventTABLE, Event('Croatie', DateTime(2019, 06, 12)).toDatabaseJson());
+    await database.insert(eventTABLE, Event('Suisse', DateTime(2019, 07, 13)).toDatabaseJson());
+    await database.insert(eventTABLE, Event('Italie', DateTime(2019, 04, 22)).toDatabaseJson());
 
 
 
