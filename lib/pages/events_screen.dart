@@ -13,7 +13,6 @@ class EventsScreen extends StatefulWidget {
 class _EventsScreenState extends State<EventsScreen> {
   EventsBloc eventsBloc;
 
-
   @override
   void initState() {
     super.initState();
@@ -32,49 +31,50 @@ class _EventsScreenState extends State<EventsScreen> {
     return BlocBuilder(
         bloc: eventsBloc,
         builder: (BuildContext context, EventsState state) {
-              return 
-              BlocProviderTree(
-                blocProviders: [
-                   BlocProvider<EventsBloc>(bloc:eventsBloc)
-                ],
-                child :Scaffold(
-                appBar: AppBar(
-                  centerTitle: true,
-                  backgroundColor: Colors.transparent,
-                  elevation: 0.0,
-                  title: Text(
-                    'Events',
-                    style: TextStyle(color: Colors.black),
+          return BlocProviderTree(
+              blocProviders: [BlocProvider<EventsBloc>(bloc: eventsBloc)],
+              child: Scaffold(
+                  appBar: AppBar(
+                    centerTitle: true,
+                    backgroundColor: Colors.transparent,
+                    elevation: 0.0,
+                    title: Text(
+                      'Events',
+                      style: TextStyle(color: Colors.black),
+                    ),
+                    actions: <Widget>[
+                      IconButton(
+                        icon: Icon(
+                          Icons.add,
+                          color: Colors.black,
+                        ),
+                        onPressed: () => false,
+                      )
+                    ],
                   ),
-                  actions: <Widget>[
-                    IconButton(
-                      icon: Icon(
-                        Icons.add,
-                        color: Colors.black,
-                      ),
-                      onPressed: () => false,
-                    )
-                  ],
-                ),
-                body: Column(
-                  children: <Widget>[
-                    Expanded(
-                      child: Stack(
-                        children: <Widget>[
-                          LoadingIndicatorWidget(
-                            visible: state is EventsStateLoading,
+                  body: RefreshIndicator(
+                    onRefresh: () async =>
+                        await eventsBloc.dispatch(FetchEvents()),
+                    child: Column(
+                      children: <Widget>[
+                        Expanded(
+                          child: Stack(
+                            children: <Widget>[
+                              LoadingIndicatorWidget(
+                                visible: state is EventsStateLoading,
+                              ),
+                              EventsList(
+                                visible: state is EventsStatePopulated,
+                                eventsList: state is EventsStatePopulated
+                                    ? state.events
+                                    : [],
+                              ),
+                            ],
                           ),
-                          EventsList(
-                            visible: state is EventsStatePopulated,
-                            eventsList: state is EventsStatePopulated
-                                ? state.events
-                                : [],
-                          ),
-                        ],
-                      ),
-                    )
-                  ],
-                )));
+                        )
+                      ],
+                    ),
+                  )));
         });
   }
 }
