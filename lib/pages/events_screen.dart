@@ -5,6 +5,8 @@ import 'package:events_app/blocs/events/events.dart';
 import 'package:events_app/widgets/events_list.dart';
 import 'package:events_app/widgets/loading_indicator.dart';
 
+import 'package:events_app/pages/events_add_screen.dart';
+
 class EventsScreen extends StatefulWidget {
   @override
   _EventsScreenState createState() => _EventsScreenState();
@@ -48,7 +50,10 @@ class _EventsScreenState extends State<EventsScreen> {
                           Icons.add,
                           color: Colors.black,
                         ),
-                        onPressed: () => false,
+                        onPressed: () async => await Navigator.of(context)
+                                .push(MaterialPageRoute(builder: (_) {
+                              return EventsAddScreen();
+                            })),
                       )
                     ],
                   ),

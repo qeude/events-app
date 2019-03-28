@@ -4,6 +4,7 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 
 import 'package:events_app/blocs/events/events.dart';
 import 'package:events_app/models/models.dart';
+import 'package:events_app/utils/constants.dart';
 
 class EventsDetailsScreen extends StatelessWidget {
   final String id;
@@ -15,7 +16,7 @@ class EventsDetailsScreen extends StatelessWidget {
     final eventBloc = BlocProvider.of<EventsBloc>(context);
     return BlocBuilder(
       bloc: eventBloc,
-      builder: (context, EventsState state) {
+      builder: (BuildContext context, EventsState state) {
         final Event event = (state as EventsStatePopulated)
             .events
             .firstWhere((elmt) => elmt.id == id, orElse: () => null);
@@ -59,7 +60,7 @@ class EventsDetailsScreen extends StatelessWidget {
                 alignment: Alignment.topCenter,
                 fit: BoxFit.fill),
           ),
-          padding: EdgeInsets.only(left: 40.0, bottom: 30.0),
+          padding: EdgeInsets.only(left: 40.0, bottom: 250.0),
           alignment: Alignment.bottomLeft,
           height: MediaQuery.of(context).size.height - 30.0,
           child: Column(
@@ -71,12 +72,7 @@ class EventsDetailsScreen extends StatelessWidget {
                     color: Colors.transparent,
                     child: Text(
                       event.name,
-                      style: TextStyle(
-                          color: Colors.white,
-                          fontSize: 50.0,
-                          shadows: [
-                            Shadow(color: Colors.black12, blurRadius: 4.0)
-                          ]),
+                      style: eventNameTextStyle,
                     )),
               ),
               Container(
@@ -84,12 +80,7 @@ class EventsDetailsScreen extends StatelessWidget {
                       color: Colors.transparent,
                       child: Text(
                           "In ${event.date.difference(DateTime.now()).inDays} days",
-                          style: TextStyle(
-                              color: Colors.white,
-                              fontSize: 20.0,
-                              shadows: [
-                                Shadow(color: Colors.black12, blurRadius: 4.0)
-                              ]))))
+                          style: eventDateTextStyle)))
             ],
           )),
     );
@@ -98,18 +89,20 @@ class EventsDetailsScreen extends StatelessWidget {
   Widget _buildDescriptionSection(BuildContext context, Event event) {
     return Container(
       alignment: Alignment.topLeft,
-      padding: EdgeInsets.only(top: 20.0, left: 40.0,right: 40.0, bottom: 20.0),
+      padding:
+          EdgeInsets.only(top: 20.0, left: 40.0, right: 40.0, bottom: 20.0),
       child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
         children: <Widget>[
           Container(
             child: Text(
               'Description',
-              style: TextStyle(fontSize: 20.0, fontWeight: FontWeight.bold),
+              style: TextStyle(fontSize: 25.0, fontWeight: FontWeight.w500),
             ),
           ),
           Container(
             child: Text(event.description),
-            padding: EdgeInsets.only(top: 20.0),  
+            padding: EdgeInsets.only(top: 20.0),
           )
         ],
       ),
