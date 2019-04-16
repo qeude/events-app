@@ -20,12 +20,13 @@ class EventDao{
         result= await db.query(eventTABLE, 
           columns: columns,
           where: 'name LIKE ?',
-          whereArgs: ["%query%"]  
+          whereArgs: ["%query%"],
+          orderBy: 'date'
         );
       }
     }
     else {
-        result = await db.query(eventTABLE, columns: columns);
+        result = await db.query(eventTABLE, columns: columns, orderBy: 'date');
     }
     List<Event> events = result.isNotEmpty
       ? result.map((item) => Event.fromDatabaseJson(item)).toList()
