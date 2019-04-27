@@ -34,6 +34,14 @@ class _EventsAddEditScreenState extends State<EventsAddEditScreen> {
     return BlocBuilder(
       bloc: eventBloc,
       builder: (BuildContext context, EventsState state) {
+        final Event event = (state as EventsStatePopulated)
+            .events
+            .firstWhere((elmt) => elmt.id == widget.id, orElse: () => null);
+        if(event != null){
+          addEventBloc.changeEventDate(event.date);
+          addEventBloc.changeDescription(event.description.trim() != "");
+          eventNameController.text = event.name;
+        }
         return Scaffold(
           body: Stack(
             children: <Widget>[
@@ -47,8 +55,10 @@ class _EventsAddEditScreenState extends State<EventsAddEditScreen> {
                       stream: addEventBloc.hasDescription,
                       builder: (context, snapshot){
                         hasDescription = snapshot.data;
-                        if(snapshot.data)
-                          return _buildDescriptionSection(context);
+                        if(snapshot.data){
+                            descriptionController.text = event.description;
+                            return _buildDescriptionSection(context);                        
+                        }
                         return _buildAddSection('description');
                       },
                     ),
@@ -211,7 +221,7 @@ class _EventsAddEditScreenState extends State<EventsAddEditScreen> {
             ),
           ),
           Container(
-            child: TextField(maxLength: 250, maxLines: 5, autocorrect: true, decoration: InputDecoration(border: InputBorder.none, hintText: "Enter description"),),
+            child: TextField(controller: descriptionController, maxLength: 250, maxLines: 5, autocorrect: true, decoration: InputDecoration(border: InputBorder.none, hintText: "Enter description"),),
             padding: EdgeInsets.only(top: 20.0),
           )
         ],

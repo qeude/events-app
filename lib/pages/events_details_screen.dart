@@ -10,7 +10,7 @@ class EventsDetailsScreen extends StatelessWidget {
   final String id;
 
   EventsDetailsScreen({@required this.id});
-
+  
   @override
   Widget build(BuildContext context) {
     final eventBloc = BlocProvider.of<EventsBloc>(context);
