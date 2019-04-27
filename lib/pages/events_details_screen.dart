@@ -5,7 +5,7 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:events_app/blocs/events/events.dart';
 import 'package:events_app/models/models.dart';
 import 'package:events_app/utils/constants.dart';
-
+import 'package:events_app/pages/events_add_edit_screen.dart';
 class EventsDetailsScreen extends StatelessWidget {
   final String id;
 
@@ -29,7 +29,7 @@ class EventsDetailsScreen extends StatelessWidget {
                   shrinkWrap: true,
                   children: <Widget>[
                     _buildEventImage(context, event),
-                    _buildDescriptionSection(context, event),
+                    (event.description.trim() != "" && event.description != null) ? _buildDescriptionSection(context, event) : Container(),
                   ],
                 ))
               ]),
@@ -39,6 +39,12 @@ class EventsDetailsScreen extends StatelessWidget {
                 left: 0.0,
                 right: 0.0,
                 child: AppBar(
+                  actions: <Widget>[
+                    IconButton(icon: Icon(Icons.create), onPressed: () async => await Navigator.of(context)
+                                .push(MaterialPageRoute(builder: (_) {
+                              return EventsAddEditScreen(id: this.id);
+                            })))
+                  ],
                   backgroundColor: Colors.transparent, //No more green
                   elevation: 0.0, //Shadow gone
                 ),

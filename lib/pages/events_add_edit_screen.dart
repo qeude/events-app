@@ -8,12 +8,16 @@ import 'package:events_app/widgets/on_image_textfield.dart';
 
 import 'package:events_app/utils/constants.dart';
 import 'package:events_app/models/models.dart';
-class EventsAddScreen extends StatefulWidget {
+import 'package:events_app/blocs/add_event/add_event_bloc.dart';
+class EventsAddEditScreen extends StatefulWidget {
+  final String id;
+
+  EventsAddEditScreen({this.id});
   @override
-  _EventsAddScreenState createState() => _EventsAddScreenState();
+  _EventsAddEditScreenState createState() => _EventsAddEditScreenState();
 }
 
-class _EventsAddScreenState extends State<EventsAddScreen> {
+class _EventsAddEditScreenState extends State<EventsAddEditScreen> {
   bool hasDescription = false;
 
   bool hasLocation = false;
@@ -23,7 +27,7 @@ class _EventsAddScreenState extends State<EventsAddScreen> {
   DateTime eventDate;
   TextEditingController eventNameController =  new TextEditingController();
   TextEditingController descriptionController =  new TextEditingController();
-  
+  final AddEventBloc addEventBloc = AddEventBloc();
   @override
   Widget build(BuildContext context) {
     final eventBloc = BlocProvider.of<EventsBloc>(context);
@@ -39,7 +43,15 @@ class _EventsAddScreenState extends State<EventsAddScreen> {
                   shrinkWrap: true,
                   children: <Widget>[
                     _buildEventImage(context),
-                    hasDescription ? _buildDescriptionSection(context) : _buildAddSection('description'),
+                    StreamBuilder<bool>(
+                      stream: addEventBloc.hasDescription,
+                      builder: (context, snapshot){
+                        hasDescription = snapshot.data;
+                        if(snapshot.data)
+                          return _buildDescriptionSection(context);
+                        return _buildAddSection('description');
+                      },
+                    ),
                     _buildAddSection('location'),
                     _buildAddSection('checklist'),
                     //_buildDescriptionSection(context),
@@ -56,7 +68,7 @@ class _EventsAddScreenState extends State<EventsAddScreen> {
                     IconButton(icon: Icon(Icons.check), onPressed: () async{
                       if(this._checkAllField()){
                         String description = hasDescription ? this.descriptionController.text : null;
-                        await eventBloc.dispatch(AddEvent(Event(this.eventNameController.text, this.eventDate, description: description)));
+                        await eventBloc.dispatch(AddEvent(Event(this.eventNameController.text, this.eventDate,"balbla", description: description)));
                         print('Saving ${this.eventDate} ${eventNameController.text}');
                       }
                     },)
@@ -131,10 +143,17 @@ class _EventsAddScreenState extends State<EventsAddScreen> {
                                 selectedDate.day,
                                 selectedTime.hour,
                                 selectedTime.minute);
-                            this.setState((){this.eventDate = result;});
+                            addEventBloc.changeEventDate(result);
                           }
                         },
-                        child: this.eventDate != null ? Text("In ${this.eventDate.difference(DateTime.now()).inDays} days", style:eventDateTextStyle): Text('Add Date', style: eventDateTextStyle)
+                        child: StreamBuilder<DateTime>(
+                          stream: addEventBloc.eventDate,
+                          builder: (context, snapshot){
+                            eventDate = snapshot.data;
+                            if(eventDate != null && eventDate.difference(DateTime.now()).inDays != 0)
+                              return Text("In ${this.eventDate.difference(DateTime.now()).inDays} days", style:eventDateTextStyle);
+                            return Text('Add Date', style: eventDateTextStyle);
+                          }),
                         )))
           ],
         ));
@@ -151,15 +170,15 @@ class _EventsAddScreenState extends State<EventsAddScreen> {
         onPressed: () {
           switch(sectionName){
             case('description'):{
-              this.setState((){hasDescription = true;});
+              addEventBloc.changeDescription(true);
             }
             break;
             case('checklist'):{
-              this.setState((){hasChecklist = true;});
+              addEventBloc.changeChecklist(true);
             }
             break;
             case('location'):{
-              this.setState((){hasLocation=true;});
+              addEventBloc.changeLocation(true);
             }
             break;
             default:{

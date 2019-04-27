@@ -5,7 +5,7 @@ import 'package:events_app/blocs/events/events.dart';
 import 'package:events_app/widgets/events_list.dart';
 import 'package:events_app/widgets/loading_indicator.dart';
 
-import 'package:events_app/pages/events_add_screen.dart';
+import 'package:events_app/pages/events_add_edit_screen.dart';
 
 class EventsScreen extends StatefulWidget {
   @override
@@ -52,7 +52,7 @@ class _EventsScreenState extends State<EventsScreen> {
                         ),
                         onPressed: () async => await Navigator.of(context)
                                 .push(MaterialPageRoute(builder: (_) {
-                              return EventsAddScreen();
+                              return EventsAddEditScreen();
                             })),
                       )
                     ],
