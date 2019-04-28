@@ -1,25 +1,28 @@
 import 'package:flutter/material.dart';
 
-import 'package:flutter_bloc/flutter_bloc.dart';
-
-import 'package:events_app/blocs/events/events.dart';
+import 'package:events_app/blocs/bloc_provider.dart';
+import 'package:events_app/blocs/events/events_bloc.dart';
+import 'package:events_app/pages/events_add_edit_screen.dart';
 import 'package:events_app/models/models.dart';
 import 'package:events_app/utils/constants.dart';
-import 'package:events_app/pages/events_add_edit_screen.dart';
-class EventsDetailsScreen extends StatelessWidget {
+class EventsDetailsScreen extends StatefulWidget {
   final String id;
 
   EventsDetailsScreen({@required this.id});
-  
+
+  @override
+  _EventsDetailsScreenState createState() => _EventsDetailsScreenState();
+}
+
+class _EventsDetailsScreenState extends State<EventsDetailsScreen> {
   @override
   Widget build(BuildContext context) {
     final eventBloc = BlocProvider.of<EventsBloc>(context);
-    return BlocBuilder(
-      bloc: eventBloc,
-      builder: (BuildContext context, EventsState state) {
-        final Event event = (state as EventsStatePopulated)
-            .events
-            .firstWhere((elmt) => elmt.id == id, orElse: () => null);
+    eventBloc.getEventById(widget.id);
+    return StreamBuilder(
+      stream : eventBloc.eventDetails,
+      builder: (context, snapshot){
+        final Event event = snapshot.data;
         return Scaffold(
           body: Stack(
             children: <Widget>[
@@ -29,7 +32,7 @@ class EventsDetailsScreen extends StatelessWidget {
                   shrinkWrap: true,
                   children: <Widget>[
                     _buildEventImage(context, event),
-                    (event.description.trim() != "" && event.description != null) ? _buildDescriptionSection(context, event) : Container(),
+                    (event.description != null && event.description.trim().isNotEmpty) ? _buildDescriptionSection(context, event) : Container(),
                   ],
                 ))
               ]),
@@ -40,9 +43,10 @@ class EventsDetailsScreen extends StatelessWidget {
                 right: 0.0,
                 child: AppBar(
                   actions: <Widget>[
-                    IconButton(icon: Icon(Icons.create), onPressed: () async => await Navigator.of(context)
+                    IconButton(icon: Icon(Icons.create), onPressed: () async =>
+                    await Navigator.of(context)
                                 .push(MaterialPageRoute(builder: (_) {
-                              return EventsAddEditScreen(id: this.id);
+                              return EventsAddEditScreen(id: widget.id);
                             })))
                   ],
                   backgroundColor: Colors.transparent, //No more green

@@ -1,8 +1,7 @@
 import 'package:flutter/material.dart';
 
-import 'package:flutter_bloc/flutter_bloc.dart';
-
-import 'package:events_app/blocs/events/events.dart';
+import 'package:events_app/blocs/bloc_provider.dart';
+import 'package:events_app/blocs/events/events_bloc.dart';
 
 import 'package:events_app/widgets/on_image_textfield.dart';
 
@@ -28,18 +27,24 @@ class _EventsAddEditScreenState extends State<EventsAddEditScreen> {
   TextEditingController eventNameController =  new TextEditingController();
   TextEditingController descriptionController =  new TextEditingController();
   final AddEventBloc addEventBloc = AddEventBloc();
+
+  @override
+  void dispose() {
+    addEventBloc.dispose();
+    super.dispose();
+  }
   @override
   Widget build(BuildContext context) {
     final eventBloc = BlocProvider.of<EventsBloc>(context);
-    return BlocBuilder(
-      bloc: eventBloc,
-      builder: (BuildContext context, EventsState state) {
-        final Event event = (state as EventsStatePopulated)
-            .events
-            .firstWhere((elmt) => elmt.id == widget.id, orElse: () => null);
+    eventBloc.getEventById(widget.id);
+    return StreamBuilder(
+      stream: eventBloc.eventDetails,
+      builder: (BuildContext context, snapshot) {
+        final Event event = snapshot.data;
+
         if(event != null){
           addEventBloc.changeEventDate(event.date);
-          addEventBloc.changeDescription(event.description.trim() != "");
+          addEventBloc.changeDescription(event.description.trim().isNotEmpty);
           eventNameController.text = event.name;
         }
         return Scaffold(
@@ -54,7 +59,7 @@ class _EventsAddEditScreenState extends State<EventsAddEditScreen> {
                     StreamBuilder<bool>(
                       stream: addEventBloc.hasDescription,
                       builder: (context, snapshot){
-                        hasDescription = snapshot.data;
+                        this.hasDescription = snapshot.data;
                         if(snapshot.data){
                             descriptionController.text = event.description;
                             return _buildDescriptionSection(context);                        
@@ -64,22 +69,24 @@ class _EventsAddEditScreenState extends State<EventsAddEditScreen> {
                     ),
                     _buildAddSection('location'),
                     _buildAddSection('checklist'),
-                    //_buildDescriptionSection(context),
                   ],
                 ))
               ]),
               new Positioned(
-                //Place it at the top, and not use the entire screen
                 top: 0.0,
                 left: 0.0,
                 right: 0.0,
                 child: AppBar(
                   actions: <Widget>[
-                    IconButton(icon: Icon(Icons.check), onPressed: () async{
+                    IconButton(icon: Icon(Icons.check), onPressed: (){
                       if(this._checkAllField()){
-                        String description = hasDescription ? this.descriptionController.text : null;
-                        await eventBloc.dispatch(AddEvent(Event(this.eventNameController.text, this.eventDate,"balbla", description: description)));
+                        String description = this.hasDescription ? this.descriptionController.text : null;
+                        if(widget.id == null)
+                          eventBloc.addEvent(Event(this.eventNameController.text, this.eventDate,"balbla", description: description));
+                        else
+                          eventBloc.updateEvent(Event(this.eventNameController.text, this.eventDate,"balbla", description: description, id:widget.id));
                         print('Saving ${this.eventDate} ${eventNameController.text}');
+                        Navigator.pop(context);
                       }
                     },)
                   ],
@@ -159,7 +166,7 @@ class _EventsAddEditScreenState extends State<EventsAddEditScreen> {
                         child: StreamBuilder<DateTime>(
                           stream: addEventBloc.eventDate,
                           builder: (context, snapshot){
-                            eventDate = snapshot.data;
+                            this.eventDate = snapshot.data;
                             if(eventDate != null && eventDate.difference(DateTime.now()).inDays != 0)
                               return Text("In ${this.eventDate.difference(DateTime.now()).inDays} days", style:eventDateTextStyle);
                             return Text('Add Date', style: eventDateTextStyle);
@@ -230,7 +237,7 @@ class _EventsAddEditScreenState extends State<EventsAddEditScreen> {
   }
 
   bool _checkAllField(){
-    return this.eventNameController.text != null && this.eventNameController.text.trim() != "" && this.eventDate!=null;
+    return this.eventNameController.text != null && this.eventNameController.text.trim().isNotEmpty && this.eventDate!=null;
   }
 }
 

@@ -1,5 +1,4 @@
 import 'package:flutter/material.dart';
-import 'package:flutter_bloc/flutter_bloc.dart';
 
 import 'package:events_app/models/models.dart';
 import 'package:events_app/utils/constants.dart';
@@ -35,9 +34,7 @@ class BuildCard extends StatelessWidget{
   @override
   Widget build(BuildContext context) {
     return GestureDetector(
-      onTap: () async => await Navigator.of(context).push(MaterialPageRoute(builder: (_){
-        return EventsDetailsScreen(id: item.id);
-      })),
+      onTap: () async => await Navigator.of(context).push(MaterialPageRoute(builder: (_){return EventsDetailsScreen(id: item.id);})),
       child: Card(
         shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(15.0)),
         semanticContainer: true,
