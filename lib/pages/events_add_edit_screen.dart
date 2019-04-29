@@ -6,6 +6,7 @@ import 'package:events_app/blocs/events/events_bloc.dart';
 import 'package:events_app/widgets/on_image_textfield.dart';
 
 import 'package:events_app/utils/constants.dart';
+import 'package:events_app/utils/utils.dart';
 import 'package:events_app/models/models.dart';
 import 'package:events_app/blocs/add_event/add_event_bloc.dart';
 class EventsAddEditScreen extends StatefulWidget {
@@ -40,9 +41,9 @@ class _EventsAddEditScreenState extends State<EventsAddEditScreen> {
     return StreamBuilder(
       stream: eventBloc.eventDetails,
       builder: (BuildContext context, snapshot) {
-        final Event event = snapshot.data;
-
-        if(event != null){
+        Event event;
+        if(snapshot.hasData){
+          event= snapshot.data;
           addEventBloc.changeEventDate(event.date);
           addEventBloc.changeDescription(event.description.trim().isNotEmpty);
           eventNameController.text = event.name;
@@ -59,12 +60,14 @@ class _EventsAddEditScreenState extends State<EventsAddEditScreen> {
                     StreamBuilder<bool>(
                       stream: addEventBloc.hasDescription,
                       builder: (context, snapshot){
-                        this.hasDescription = snapshot.data;
-                        if(snapshot.data){
-                            descriptionController.text = event.description;
-                            return _buildDescriptionSection(context);                        
-                        }
-                        return _buildAddSection('description');
+                        if(snapshot.hasData){
+                          this.hasDescription = snapshot.data;
+                          if(snapshot.data){
+                              descriptionController.text = event.description;
+                              return _buildDescriptionSection(context);                        
+                          }
+                           return _buildAddSection('description');
+                        }    
                       },
                     ),
                     _buildAddSection('location'),
@@ -166,9 +169,10 @@ class _EventsAddEditScreenState extends State<EventsAddEditScreen> {
                         child: StreamBuilder<DateTime>(
                           stream: addEventBloc.eventDate,
                           builder: (context, snapshot){
-                            this.eventDate = snapshot.data;
-                            if(eventDate != null && eventDate.difference(DateTime.now()).inDays != 0)
-                              return Text("In ${this.eventDate.difference(DateTime.now()).inDays} days", style:eventDateTextStyle);
+                            if(snapshot.hasData){
+                              this.eventDate = snapshot.data;
+                              return Text("In ${getTimeUntilEvent(snapshot.data)}", style:eventDateTextStyle); 
+                            }
                             return Text('Add Date', style: eventDateTextStyle);
                           }),
                         )))

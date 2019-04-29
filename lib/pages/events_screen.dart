@@ -33,7 +33,7 @@ class _EventsScreenState extends State<EventsScreen> {
                 Icons.add,
                 color: Colors.black,
               ),
-              onPressed: () async => print('+'),//await Navigator.of(context).push(MaterialPageRoute(builder: (_) {return EventsAddEditScreen();})),
+              onPressed: () async => await Navigator.of(context).push(MaterialPageRoute(builder: (_) {return EventsAddEditScreen();})),
             )
           ],
         ),

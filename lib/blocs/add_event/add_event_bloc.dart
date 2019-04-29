@@ -11,7 +11,7 @@ class AddEventBloc {
   final BehaviorSubject<bool> _locationSubject = BehaviorSubject.seeded(false);
   Observable<bool> get hasLocation => _locationSubject.stream;
 
-  final BehaviorSubject<DateTime> _dateSubject = BehaviorSubject.seeded(DateTime.now());
+  final PublishSubject<DateTime> _dateSubject =PublishSubject<DateTime>();
   Observable<DateTime> get eventDate => _dateSubject.stream;
 
 

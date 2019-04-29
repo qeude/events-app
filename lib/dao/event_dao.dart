@@ -11,7 +11,7 @@ class EventDao{
     var result = db.insert(eventTABLE, event.toDatabaseJson());
     return result;
   }
-
+  //TODO: Add getEventById
   Future<List<Event>> getEvents({List<String> columns, String query}) async{
     final db = await dbProvider.database;
     List<Map<String, dynamic>> result;

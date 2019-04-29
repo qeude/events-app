@@ -5,6 +5,7 @@ import 'package:events_app/blocs/events/events_bloc.dart';
 import 'package:events_app/pages/events_add_edit_screen.dart';
 import 'package:events_app/models/models.dart';
 import 'package:events_app/utils/constants.dart';
+import 'package:events_app/utils/utils.dart';
 class EventsDetailsScreen extends StatefulWidget {
   final String id;
 
@@ -22,7 +23,10 @@ class _EventsDetailsScreenState extends State<EventsDetailsScreen> {
     return StreamBuilder(
       stream : eventBloc.eventDetails,
       builder: (context, snapshot){
-        final Event event = snapshot.data;
+        Event event;
+        // TODO: Handle the moment when data is empty
+        if(snapshot.hasData)
+          event = snapshot.data;
         return Scaffold(
           body: Stack(
             children: <Widget>[
@@ -89,7 +93,7 @@ class _EventsDetailsScreenState extends State<EventsDetailsScreen> {
                   child: Material(
                       color: Colors.transparent,
                       child: Text(
-                          "In ${event.date.difference(DateTime.now()).inDays} days",
+                          "In ${getTimeUntilEvent(event.date)}",
                           style: eventDateTextStyle)))
             ],
           )),
