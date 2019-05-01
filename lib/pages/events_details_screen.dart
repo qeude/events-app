@@ -70,12 +70,13 @@ class _EventsDetailsScreenState extends State<EventsDetailsScreen> {
   }
 
   Widget _buildEventImage(BuildContext context, Event event) {
+    //TODO: Fix Hero animation because of state
     return Hero(
       tag: 'eventImg${event.id}',
       child: Container(
           decoration: BoxDecoration(
             image: DecorationImage(
-                image: AssetImage("images/croatia.jpg"),
+                image: MemoryImage(event.image),
                 alignment: Alignment.topCenter,
                 fit: BoxFit.fill),
           ),

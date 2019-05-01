@@ -46,7 +46,7 @@ class BuildCard extends StatelessWidget{
           height: 350.0,
           decoration: BoxDecoration(
             image: DecorationImage(
-              image: AssetImage("images/croatia.jpg"),
+              image: MemoryImage(item.image),
               alignment: Alignment.topCenter,
               fit: BoxFit.fill
             ),

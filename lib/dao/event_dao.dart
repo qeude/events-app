@@ -1,5 +1,3 @@
-import 'dart:io';
-
 import 'package:events_app/database/database.dart';
 import 'package:events_app/models/models.dart';
 

@@ -1,4 +1,8 @@
+import 'dart:typed_data';
+import 'dart:convert';
 import 'package:flutter/material.dart';
+import 'dart:io';
+import 'package:image_picker/image_picker.dart';
 
 import 'package:events_app/blocs/bloc_provider.dart';
 import 'package:events_app/blocs/events/events_bloc.dart';
@@ -9,6 +13,7 @@ import 'package:events_app/utils/constants.dart';
 import 'package:events_app/utils/utils.dart';
 import 'package:events_app/models/models.dart';
 import 'package:events_app/blocs/add_event/add_event_bloc.dart';
+
 class EventsAddEditScreen extends StatefulWidget {
   final String id;
 
@@ -25,8 +30,9 @@ class _EventsAddEditScreenState extends State<EventsAddEditScreen> {
   bool hasChecklist = false;
 
   DateTime eventDate;
-  TextEditingController eventNameController =  new TextEditingController();
-  TextEditingController descriptionController =  new TextEditingController();
+
+  TextEditingController eventNameController = new TextEditingController();
+  TextEditingController descriptionController = new TextEditingController();
   final AddEventBloc addEventBloc = AddEventBloc();
 
   @override
@@ -34,6 +40,7 @@ class _EventsAddEditScreenState extends State<EventsAddEditScreen> {
     addEventBloc.dispose();
     super.dispose();
   }
+
   @override
   Widget build(BuildContext context) {
     final eventBloc = BlocProvider.of<EventsBloc>(context);
@@ -42,10 +49,11 @@ class _EventsAddEditScreenState extends State<EventsAddEditScreen> {
       stream: eventBloc.eventDetails,
       builder: (BuildContext context, snapshot) {
         Event event;
-        if(snapshot.hasData){
-          event= snapshot.data;
+        if (snapshot.hasData) {
+          event = snapshot.data;
           addEventBloc.changeEventDate(event.date);
-          addEventBloc.changeDescription(event.description.trim().isNotEmpty);
+          addEventBloc.changeDescription(event.description != null && event.description.trim().isNotEmpty);
+          addEventBloc.changeEventImage(event.image);
           eventNameController.text = event.name;
         }
         return Scaffold(
@@ -56,19 +64,26 @@ class _EventsAddEditScreenState extends State<EventsAddEditScreen> {
                     child: ListView(
                   shrinkWrap: true,
                   children: <Widget>[
-                    _buildEventImage(context),
+                    StreamBuilder<Uint8List>(
+                        stream: addEventBloc.eventImage,
+                        builder: (context, snapshot) {
+                          if (snapshot.hasData) {
+                            return _buildEventImage(context, snapshot.data);
+                          }
+                          return _buildChoseImage();
+                        }),
                     StreamBuilder<bool>(
                       stream: addEventBloc.hasDescription,
-                      builder: (context, snapshot){
-                        if(snapshot.hasData){
+                      builder: (context, snapshot) {
+                        if (snapshot.hasData) {
                           this.hasDescription = snapshot.data;
-                          if(snapshot.data){
-                              descriptionController.text = event.description;
-                              return _buildDescriptionSection(context);                        
+                          if (snapshot.data) {
+                            descriptionController.text = event.description;
+                            return _buildDescriptionSection(context);
                           }
-                           return _buildAddSection('description');
+                          return _buildAddSection('description');
                         }
-                        return Container();    
+                        return Container();
                       },
                     ),
                     _buildAddSection('location'),
@@ -82,17 +97,29 @@ class _EventsAddEditScreenState extends State<EventsAddEditScreen> {
                 right: 0.0,
                 child: AppBar(
                   actions: <Widget>[
-                    IconButton(icon: Icon(Icons.check), onPressed: (){
-                      if(this._checkAllField()){
-                        String description = this.hasDescription ? this.descriptionController.text : null;
-                        if(widget.id == null)
-                          eventBloc.addEvent(Event(this.eventNameController.text, this.eventDate,"balbla", description: description));
-                        else
-                          eventBloc.updateEvent(Event(this.eventNameController.text, this.eventDate,"balbla", description: description, id:widget.id));
-                        print('Saving ${this.eventDate} ${eventNameController.text}');
-                        Navigator.pop(context);
-                      }
-                    },)
+                    StreamBuilder(
+                      stream: addEventBloc.eventImage,
+                      builder: (context, snapshot) {
+                        if (!snapshot.hasData) return Container();
+                        return IconButton(
+                          icon: Icon(Icons.check),
+                          onPressed: () {
+                            if (this._checkAllField()) {
+                              String description = this.hasDescription
+                                  ? this.descriptionController.text
+                                  : null;
+                              if(widget.id == null)
+                                eventBloc.addEvent(Event(this.eventNameController.text, this.eventDate, snapshot.data, description: description));
+                              else
+                                eventBloc.updateEvent(Event(this.eventNameController.text, this.eventDate,snapshot.data, description: description, id:widget.id));
+                              print(
+                                  'Saving ${this.eventDate} ${eventNameController.text}');
+                              Navigator.pop(context);
+                            }
+                          },
+                        );
+                      },
+                    )
                   ],
                   backgroundColor: Colors.transparent, //No more green
                   elevation: 0.0, //Shadow gone
@@ -105,11 +132,11 @@ class _EventsAddEditScreenState extends State<EventsAddEditScreen> {
     );
   }
 
-  Widget _buildEventImage(BuildContext context) {
+  Widget _buildEventImage(BuildContext context, Uint8List image) {
     return Container(
         decoration: BoxDecoration(
           image: DecorationImage(
-              image: AssetImage("images/croatia.jpg"),
+              image: MemoryImage(image),
               alignment: Alignment.topCenter,
               fit: BoxFit.fill),
         ),
@@ -124,21 +151,36 @@ class _EventsAddEditScreenState extends State<EventsAddEditScreen> {
               padding: EdgeInsets.zero,
               child: Material(
                   color: Colors.transparent,
-                  child: OnImageTextField(eventNameTextStyle, 'Add Name', controller: eventNameController,)),
+                  child: OnImageTextField(
+                    eventNameTextStyle,
+                    'Add Name',
+                    controller: eventNameController,
+                  )),
             ),
             Container(
                 child: Material(
                     color: Colors.transparent,
                     child: FlatButton(
-                        materialTapTargetSize: MaterialTapTargetSize.shrinkWrap,
-                        padding: EdgeInsets.zero,
-                        onPressed: () async {
-                          DateTime selectedDate = await showDatePicker(
+                      materialTapTargetSize: MaterialTapTargetSize.shrinkWrap,
+                      padding: EdgeInsets.zero,
+                      onPressed: () async {
+                        DateTime selectedDate = await showDatePicker(
+                          context: context,
+                          initialDate: DateTime.now(),
+                          firstDate: DateTime.now().subtract(Duration(days: 1)),
+                          lastDate: DateTime(2030),
+                          builder: (BuildContext context, Widget child) {
+                            return Theme(
+                              data: ThemeData.dark(),
+                              child: child,
+                            );
+                          },
+                        );
+                        TimeOfDay selectedTime;
+                        if (selectedDate != null) {
+                          selectedTime = await showTimePicker(
                             context: context,
-                            initialDate: DateTime.now(),
-                            firstDate:
-                                DateTime.now().subtract(Duration(days: 1)),
-                            lastDate: DateTime(2030),
+                            initialTime: TimeOfDay.now(),
                             builder: (BuildContext context, Widget child) {
                               return Theme(
                                 data: ThemeData.dark(),
@@ -146,41 +188,53 @@ class _EventsAddEditScreenState extends State<EventsAddEditScreen> {
                               );
                             },
                           );
-                          TimeOfDay selectedTime;
-                          if (selectedDate != null) {
-                            selectedTime = await showTimePicker(
-                              context: context,
-                              initialTime: TimeOfDay.now(),
-                              builder: (BuildContext context, Widget child) {
-                                return Theme(
-                                  data: ThemeData.dark(),
-                                  child: child,
-                                );
-                              },
-                            );
-                          }
-                          if (selectedDate != null && selectedTime != null) {
-                            DateTime result = DateTime(
-                                selectedDate.year,
-                                selectedDate.month,
-                                selectedDate.day,
-                                selectedTime.hour,
-                                selectedTime.minute);
-                            addEventBloc.changeEventDate(result);
-                          }
-                        },
-                        child: StreamBuilder<DateTime>(
+                        }
+                        if (selectedDate != null && selectedTime != null) {
+                          DateTime result = DateTime(
+                              selectedDate.year,
+                              selectedDate.month,
+                              selectedDate.day,
+                              selectedTime.hour,
+                              selectedTime.minute);
+                          addEventBloc.changeEventDate(result);
+                        }
+                      },
+                      child: StreamBuilder<DateTime>(
                           stream: addEventBloc.eventDate,
-                          builder: (context, snapshot){
-                            if(snapshot.hasData){
+                          builder: (context, snapshot) {
+                            if (snapshot.hasData) {
                               this.eventDate = snapshot.data;
-                              return Text("In ${getTimeUntilEvent(snapshot.data)}", style:eventDateTextStyle); 
+                              return Text(
+                                  "In ${getTimeUntilEvent(snapshot.data)}",
+                                  style: eventDateTextStyle);
                             }
                             return Text('Add Date', style: eventDateTextStyle);
                           }),
-                        )))
+                    )))
           ],
         ));
+  }
+
+  Future getImage() async {
+    var image = await ImagePicker.pickImage(source: ImageSource.gallery);
+    if (image != null) {
+      List<int> imageBytes = image.readAsBytesSync();
+      addEventBloc.changeEventImage(imageBytes);
+    }
+  }
+
+  Widget _buildChoseImage() {
+    return GestureDetector(
+      child: Container(
+          padding: EdgeInsets.only(left: 40.0, bottom: 245.0),
+          decoration: BoxDecoration(color: Colors.black12),
+          alignment: Alignment.bottomLeft,
+          height: MediaQuery.of(context).size.height - 30.0,
+          child: Center(
+            child: Text('Chose Image'),
+          )),
+      onTap: () => getImage(),
+    );
   }
 
   Widget _buildAddSection(String sectionName) {
@@ -192,23 +246,25 @@ class _EventsAddEditScreenState extends State<EventsAddEditScreen> {
           EdgeInsets.only(top: 20.0, left: 40.0, right: 40.0, bottom: 20.0),
       child: FlatButton(
         onPressed: () {
-          switch(sectionName){
-            case('description'):{
-              addEventBloc.changeDescription(true);
-            }
-            break;
-            case('checklist'):{
-              addEventBloc.changeChecklist(true);
-            }
-            break;
-            case('location'):{
-              addEventBloc.changeLocation(true);
-            }
-            break;
-            default:{
-              
-            }
-            break;
+          switch (sectionName) {
+            case ('description'):
+              {
+                addEventBloc.changeDescription(true);
+              }
+              break;
+            case ('checklist'):
+              {
+                addEventBloc.changeChecklist(true);
+              }
+              break;
+            case ('location'):
+              {
+                addEventBloc.changeLocation(true);
+              }
+              break;
+            default:
+              {}
+              break;
           }
         },
         padding: EdgeInsets.only(top: 0.0, left: 0.0),
@@ -235,7 +291,14 @@ class _EventsAddEditScreenState extends State<EventsAddEditScreen> {
             ),
           ),
           Container(
-            child: TextField(controller: descriptionController, maxLength: 250, maxLines: 5, autocorrect: true, decoration: InputDecoration(border: InputBorder.none, hintText: "Enter description"),),
+            child: TextField(
+              controller: descriptionController,
+              maxLength: 250,
+              maxLines: 5,
+              autocorrect: true,
+              decoration: InputDecoration(
+                  border: InputBorder.none, hintText: "Enter description"),
+            ),
             padding: EdgeInsets.only(top: 20.0),
           )
         ],
@@ -243,8 +306,9 @@ class _EventsAddEditScreenState extends State<EventsAddEditScreen> {
     );
   }
 
-  bool _checkAllField(){
-    return this.eventNameController.text != null && this.eventNameController.text.trim().isNotEmpty && this.eventDate!=null;
+  bool _checkAllField() {
+    return this.eventNameController.text != null &&
+        this.eventNameController.text.trim().isNotEmpty &&
+        this.eventDate != null;
   }
 }
-

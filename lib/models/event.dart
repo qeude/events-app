@@ -1,4 +1,6 @@
-
+import 'dart:io';
+import 'dart:convert';
+import 'dart:typed_data';
 import 'package:meta/meta.dart';
 import 'package:uuid/uuid.dart';
 
@@ -6,7 +8,7 @@ import 'package:uuid/uuid.dart';
 class Event {
   final bool complete;
   final String id;
-  final String image;
+  final Uint8List image;
   final String name;
   final String description;
   final DateTime date;
@@ -29,7 +31,7 @@ class Event {
   factory Event.fromDatabaseJson(Map<String, dynamic> data) => Event(
       data['name'],
       DateTime.parse(data['date']),
-      data['image'],
+      base64.decode(data['image']),
       id:data['id'], 
       description: data['description'],
       complete: data['complete'] == 0 ? false : true,
@@ -38,7 +40,7 @@ class Event {
   Map<String, dynamic> toDatabaseJson() => {
     "id": this.id,
     "name":this.name,
-    "image": this.image,
+    "image": base64.encode(this.image),
     "description": this.description,
     "date":this.date.toString(), 
     "complete": this.complete ==false ? 0 : 1,

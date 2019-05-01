@@ -1,7 +1,7 @@
+import 'dart:typed_data';
 import 'package:rxdart/rxdart.dart';
-
-
-class AddEventBloc {
+import 'package:events_app/blocs/bloc_provider.dart';
+class AddEventBloc extends BlocBase{
   final BehaviorSubject<bool> _descriptionSubject = BehaviorSubject.seeded(false);
   Observable<bool> get hasDescription => _descriptionSubject.stream;
 
@@ -15,15 +15,23 @@ class AddEventBloc {
   Observable<DateTime> get eventDate => _dateSubject.stream;
 
 
+  final PublishSubject<Uint8List> _imageSubject = PublishSubject<Uint8List>();
+  Observable<Uint8List> get eventImage => _imageSubject.stream;
+
+
+
   void changeDescription(final bool status) => _descriptionSubject.sink.add(status);
   void changeChecklist(final bool status) => _checklistSubject.sink.add(status);
   void changeLocation(final bool status) => _locationSubject.sink.add(status);
   void changeEventDate(final DateTime date) => _dateSubject.sink.add(date);
-
+  void changeEventImage(final Uint8List image) => _imageSubject.sink.add(image);
+  
+  @override
   dispose(){
     _checklistSubject?.close();
     _locationSubject?.close();
     _descriptionSubject?.close();
     _dateSubject?.close();
+    _imageSubject?.close();
   }
 }

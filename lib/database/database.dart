@@ -1,9 +1,7 @@
 import 'dart:io';
-
 import 'package:sqflite/sqflite.dart';
 import 'package:path/path.dart';
 import 'package:path_provider/path_provider.dart';
-import 'package:events_app/models/models.dart';
 
 final eventTABLE = 'Event';
 class DatabaseProvider {
@@ -12,9 +10,16 @@ class DatabaseProvider {
   Database _database;
 
   Future<Database> get database async{
+    //deleteDb();
     if (_database != null) return _database;
     _database = await createDatabase();
     return _database;
+  }
+
+  deleteDb() async{
+    Directory documentsDirectory = await getApplicationDocumentsDirectory();
+    String path = join(documentsDirectory.path, "Event.db");
+    await deleteDatabase(path);
   }
 
   createDatabase() async{
@@ -38,12 +43,5 @@ class DatabaseProvider {
         "date TEXT,"
         "complete INTEGER "
         ")");
-
-    await database.insert(eventTABLE, Event('Croatie', DateTime(2019, 06, 12), "TODO",description: "Horum adventum praedocti speculationibus fidis rectores militum tessera data sollemni armatos omnes celeri eduxere procursu et agiliter praeterito Calycadni fluminis ponte, cuius undarum magnitudo murorum adluit turres, in speciem locavere pugnandi. neque tamen exiluit quisquam nec permissus est congredi. formidabatur enim flagrans vesania manus et superior numero et ruitura sine respectu salutis in ferrum.").toDatabaseJson());
-    await database.insert(eventTABLE, Event('Suisse', DateTime(2019, 07, 13), "TODO", description: "Horum adventum praedocti speculationibus fidis rectores militum tessera data sollemni armatos omnes celeri eduxere procursu et agiliter praeterito Calycadni fluminis ponte, cuius undarum magnitudo murorum adluit turres, in speciem locavere pugnandi. neque tamen exiluit quisquam nec permissus est congredi. formidabatur enim flagrans vesania manus et superior numero et ruitura sine respectu salutis in ferrum.").toDatabaseJson());
-    await database.insert(eventTABLE, Event('Italie', DateTime(2019, 04, 22), "TODO", description: "Horum adventum praedocti speculationibus fidis rectores militum tessera data sollemni armatos omnes celeri eduxere procursu et agiliter praeterito Calycadni fluminis ponte, cuius undarum magnitudo murorum adluit turres, in speciem locavere pugnandi. neque tamen exiluit quisquam nec permissus est congredi. formidabatur enim flagrans vesania manus et superior numero et ruitura sine respectu salutis in ferrum.").toDatabaseJson());
-
-
-
   }
 }
