@@ -6,6 +6,7 @@ import 'package:events_app/pages/events_add_edit_screen.dart';
 import 'package:events_app/models/models.dart';
 import 'package:events_app/utils/constants.dart';
 import 'package:events_app/utils/utils.dart';
+
 class EventsDetailsScreen extends StatefulWidget {
   final String id;
 
@@ -20,15 +21,14 @@ class _EventsDetailsScreenState extends State<EventsDetailsScreen> {
   Widget build(BuildContext context) {
     final eventBloc = BlocProvider.of<EventsBloc>(context);
     eventBloc.getEventById(widget.id);
-    return StreamBuilder(
-      stream : eventBloc.eventDetails,
-      builder: (context, snapshot){
+    return Scaffold(
+        body: StreamBuilder(
+      stream: eventBloc.eventDetails,
+      builder: (context, snapshot) {
         Event event;
-        // TODO: Handle the moment when data is empty
-        if(snapshot.hasData)
+        if (snapshot.hasData) {
           event = snapshot.data;
-        return Scaffold(
-          body: Stack(
+          return Stack(
             children: <Widget>[
               Column(children: <Widget>[
                 Expanded(
@@ -36,7 +36,10 @@ class _EventsDetailsScreenState extends State<EventsDetailsScreen> {
                   shrinkWrap: true,
                   children: <Widget>[
                     _buildEventImage(context, event),
-                    (event.description != null && event.description.trim().isNotEmpty) ? _buildDescriptionSection(context, event) : Container(),
+                    (event.description != null &&
+                            event.description.trim().isNotEmpty)
+                        ? _buildDescriptionSection(context, event)
+                        : Container(),
                   ],
                 ))
               ]),
@@ -47,8 +50,9 @@ class _EventsDetailsScreenState extends State<EventsDetailsScreen> {
                 right: 0.0,
                 child: AppBar(
                   actions: <Widget>[
-                    IconButton(icon: Icon(Icons.create), onPressed: () async =>
-                    await Navigator.of(context)
+                    IconButton(
+                        icon: Icon(Icons.create),
+                        onPressed: () async => await Navigator.of(context)
                                 .push(MaterialPageRoute(builder: (_) {
                               return EventsAddEditScreen(id: widget.id);
                             })))
@@ -58,10 +62,11 @@ class _EventsDetailsScreenState extends State<EventsDetailsScreen> {
                 ),
               ),
             ],
-          ),
-        );
+          );
+        }
+        return Stack();
       },
-    );
+    ));
   }
 
   Widget _buildEventImage(BuildContext context, Event event) {
@@ -92,8 +97,7 @@ class _EventsDetailsScreenState extends State<EventsDetailsScreen> {
               Container(
                   child: Material(
                       color: Colors.transparent,
-                      child: Text(
-                          "In ${getTimeUntilEvent(event.date)}",
+                      child: Text("In ${getTimeUntilEvent(event.date)}",
                           style: eventDateTextStyle)))
             ],
           )),

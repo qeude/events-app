@@ -67,7 +67,8 @@ class _EventsAddEditScreenState extends State<EventsAddEditScreen> {
                               return _buildDescriptionSection(context);                        
                           }
                            return _buildAddSection('description');
-                        }    
+                        }
+                        return Container();    
                       },
                     ),
                     _buildAddSection('location'),
@@ -112,7 +113,7 @@ class _EventsAddEditScreenState extends State<EventsAddEditScreen> {
               alignment: Alignment.topCenter,
               fit: BoxFit.fill),
         ),
-        padding: EdgeInsets.only(left: 40.0, bottom: 250.0),
+        padding: EdgeInsets.only(left: 40.0, bottom: 245.0),
         alignment: Alignment.bottomLeft,
         height: MediaQuery.of(context).size.height - 30.0,
         child: Column(
@@ -120,6 +121,7 @@ class _EventsAddEditScreenState extends State<EventsAddEditScreen> {
           crossAxisAlignment: CrossAxisAlignment.start,
           children: <Widget>[
             Container(
+              padding: EdgeInsets.zero,
               child: Material(
                   color: Colors.transparent,
                   child: OnImageTextField(eventNameTextStyle, 'Add Name', controller: eventNameController,)),
@@ -128,7 +130,8 @@ class _EventsAddEditScreenState extends State<EventsAddEditScreen> {
                 child: Material(
                     color: Colors.transparent,
                     child: FlatButton(
-                        padding: EdgeInsets.only(left: 0.0, top: 0.0),
+                        materialTapTargetSize: MaterialTapTargetSize.shrinkWrap,
+                        padding: EdgeInsets.zero,
                         onPressed: () async {
                           DateTime selectedDate = await showDatePicker(
                             context: context,
