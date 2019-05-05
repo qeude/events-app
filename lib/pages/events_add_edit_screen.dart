@@ -41,8 +41,7 @@ class _EventsAddEditScreenState extends State<EventsAddEditScreen> {
   @override
   Widget build(BuildContext context) {
     final eventBloc = BlocProvider.of<EventsBloc>(context);
-    if(widget.id != null)
-      eventBloc.getEventById(widget.id);
+    if (widget.id != null) eventBloc.getEventById(widget.id);
     return StreamBuilder(
       stream: eventBloc.eventDetails,
       builder: (BuildContext context, snapshot) {
@@ -50,7 +49,11 @@ class _EventsAddEditScreenState extends State<EventsAddEditScreen> {
         if (snapshot.hasData) {
           event = snapshot.data;
           addEventBloc.changeEventDate(event.date);
-          addEventBloc.changeDescription(event.description != null && event.description.trim().isNotEmpty);
+          if(event.description != null && event.description.trim().isNotEmpty){
+            addEventBloc.changeDescription(true);
+          }
+          // addEventBloc.changeDescription(
+          //     event.description != null && event.description.trim().isNotEmpty);
           addEventBloc.changeEventImage(event.image);
           eventNameController.text = event.name;
         }
@@ -76,7 +79,8 @@ class _EventsAddEditScreenState extends State<EventsAddEditScreen> {
                         if (snapshot.hasData) {
                           this.hasDescription = snapshot.data;
                           if (snapshot.data) {
-                            descriptionController.text = event == null ? "" : event.description;
+                            descriptionController.text =
+                                event == null ? "" : event.description;
                             return _buildDescriptionSection(context);
                           }
                           return _buildAddSection('description');
@@ -90,41 +94,51 @@ class _EventsAddEditScreenState extends State<EventsAddEditScreen> {
                 ))
               ]),
               new Positioned(
-                top: 0.0,
-                left: 0.0,
-                right: 0.0,
-                child: StreamBuilder(
-                  stream : addEventBloc.eventImage,
-                  builder: (context, snapshot){
-                    return AppBar(
-                      backgroundColor: Colors.transparent, //No more green
-                      elevation: 0.0,
-                      actions: snapshot.hasData ? <Widget>[
-                        IconButton(icon: Icon(Icons.image),
-                        onPressed: () => {
-                          getImage()
-                        },),
-                        IconButton(
-                          icon: Icon(Icons.check),
-                          onPressed: () {
-                            if (this._checkAllField()) {
-                              String description = this.hasDescription
-                                  ? this.descriptionController.text
-                                  : null;
-                              if(widget.id == null)
-                                eventBloc.addEvent(Event(this.eventNameController.text, this.eventDate, snapshot.data, description: description));
-                              else
-                                eventBloc.updateEvent(Event(this.eventNameController.text, this.eventDate,snapshot.data, description: description, id:widget.id));
-                              print(
-                                  'Saving ${this.eventDate} ${eventNameController.text} ${snapshot.data}');
-                              Navigator.pop(context);
-                            }
-                          },
-                        )
-                      ] : <Widget>[],
-                    );
-                  })
-              ),
+                  top: 0.0,
+                  left: 0.0,
+                  right: 0.0,
+                  child: StreamBuilder(
+                      stream: addEventBloc.eventImage,
+                      builder: (context, snapshot) {
+                        return AppBar(
+                          backgroundColor: Colors.transparent, //No more green
+                          elevation: 0.0,
+                          actions: snapshot.hasData
+                              ? <Widget>[
+                                  IconButton(
+                                    icon: Icon(Icons.image),
+                                    onPressed: () => {getImage()},
+                                  ),
+                                  IconButton(
+                                    icon: Icon(Icons.check),
+                                    onPressed: () {
+                                      if (this._checkAllField()) {
+                                        String description = this.hasDescription
+                                            ? this.descriptionController.text
+                                            : null;
+                                        if (widget.id == null)
+                                          eventBloc.addEvent(Event(
+                                              this.eventNameController.text,
+                                              this.eventDate,
+                                              snapshot.data,
+                                              description: description));
+                                        else
+                                          eventBloc.updateEvent(Event(
+                                              this.eventNameController.text,
+                                              this.eventDate,
+                                              snapshot.data,
+                                              description: description,
+                                              id: widget.id));
+                                        print(
+                                            'Saving ${this.eventDate} ${eventNameController.text} ${snapshot.data}');
+                                        Navigator.pop(context);
+                                      }
+                                    },
+                                  )
+                                ]
+                              : <Widget>[],
+                        );
+                      })),
             ],
           ),
         );
@@ -231,13 +245,19 @@ class _EventsAddEditScreenState extends State<EventsAddEditScreen> {
           alignment: Alignment.bottomLeft,
           height: MediaQuery.of(context).size.height - 30.0,
           child: Center(
-            child: Row(
-              mainAxisAlignment: MainAxisAlignment.center,
-              children: <Widget>[
-              Icon(Icons.image, size: 40,),
-              Text('Tap to select an image ...', style: TextStyle(fontSize: 20),),
-            ],)
-          )),
+              child: Row(
+            mainAxisAlignment: MainAxisAlignment.center,
+            children: <Widget>[
+              Icon(
+                Icons.image,
+                size: 40,
+              ),
+              Text(
+                'Tap to select an image ...',
+                style: TextStyle(fontSize: 20),
+              ),
+            ],
+          ))),
       onTap: () {
         getImage();
       },
@@ -284,7 +304,6 @@ class _EventsAddEditScreenState extends State<EventsAddEditScreen> {
   }
 
   Widget _buildDescriptionSection(BuildContext context) {
-
     return Container(
       alignment: Alignment.topLeft,
       padding:
@@ -293,10 +312,22 @@ class _EventsAddEditScreenState extends State<EventsAddEditScreen> {
         crossAxisAlignment: CrossAxisAlignment.start,
         children: <Widget>[
           Container(
-            child: Text(
-              'Description',
-              style: TextStyle(fontSize: 25.0, fontWeight: FontWeight.w500),
-            ),
+            child: ListTile(
+                contentPadding: EdgeInsets.all(0),
+                trailing: IconButton(
+                  icon: Icon(
+                    Icons.remove,
+                    color: Colors.black,
+                  ),
+                  onPressed: () {
+                    descriptionController.text = ""; 
+                    addEventBloc.changeDescription(false);
+                  },
+                ),
+                title: Text(
+                  'Description',
+                  style: TextStyle(fontSize: 25.0, fontWeight: FontWeight.w500),
+                )),
           ),
           Container(
             child: TextField(
