@@ -33,7 +33,6 @@ class BuildCard extends StatelessWidget{
   const BuildCard({this.item});
   @override
   Widget build(BuildContext context) {
-    print(item.image);
     return GestureDetector(
       onTap: () async => await Navigator.of(context).push(MaterialPageRoute(builder: (_){return EventsDetailsScreen(id: item.id);})),
       child: Card(
@@ -66,7 +65,7 @@ class BuildCard extends StatelessWidget{
               Container(
                 child: Material(
                         color: Colors.transparent,
-                        child : Text("In ${item.date.difference(DateTime.now()).inDays} days", style: TextStyle(color:Colors.white, fontSize: 20.0, shadows: [Shadow(color: Colors.black12, blurRadius: 4.0)])))
+                        child : Text("In ${getTimeUntilEvent(item.date)}", style: TextStyle(color:Colors.white, fontSize: 20.0, shadows: [Shadow(color: Colors.black12, blurRadius: 4.0)])))
               )
             ],
           )

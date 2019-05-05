@@ -76,7 +76,7 @@ class _EventsAddEditScreenState extends State<EventsAddEditScreen> {
                         if (snapshot.hasData) {
                           this.hasDescription = snapshot.data;
                           if (snapshot.data) {
-                            descriptionController.text = event.description;
+                            descriptionController.text = event == null ? "" : event.description;
                             return _buildDescriptionSection(context);
                           }
                           return _buildAddSection('description');
@@ -227,7 +227,7 @@ class _EventsAddEditScreenState extends State<EventsAddEditScreen> {
   Widget _buildSelectImage() {
     return GestureDetector(
       child: Container(
-          decoration: BoxDecoration(color: Colors.black12),
+          decoration: BoxDecoration(color: Colors.grey[100]),
           alignment: Alignment.bottomLeft,
           height: MediaQuery.of(context).size.height - 30.0,
           child: Center(
@@ -284,6 +284,7 @@ class _EventsAddEditScreenState extends State<EventsAddEditScreen> {
   }
 
   Widget _buildDescriptionSection(BuildContext context) {
+
     return Container(
       alignment: Alignment.topLeft,
       padding:

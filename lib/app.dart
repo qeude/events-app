@@ -21,8 +21,10 @@ class _AppState extends State<App> {
     return BlocProvider(
       bloc: eventsBloc,
       child: MaterialApp(
+        routes: {
+          '/': (BuildContext context) => EventsScreen()
+        },
         title: appTitle,
-        home: EventsScreen(),
     ));
   }
 }

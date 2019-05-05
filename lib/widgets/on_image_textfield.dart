@@ -13,7 +13,7 @@ class OnImageTextField extends StatelessWidget {
       style: this.style,
       maxLines: null,
       maxLength: 50,
-      decoration: InputDecoration(hintText: hintText, hintStyle: TextStyle(color: Colors.white), border: InputBorder.none,contentPadding: EdgeInsets.only(bottom: -30)),
+      decoration: InputDecoration(hintText: hintText, hintStyle: TextStyle(color: Colors.white), border: InputBorder.none,contentPadding: EdgeInsets.only(bottom: 0), counterText: ""),
     );
   }
 }
