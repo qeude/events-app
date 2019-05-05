@@ -1,5 +1,4 @@
 import 'package:flutter/material.dart';
-import 'dart:io';
 
 import 'package:events_app/blocs/bloc_provider.dart';
 import 'package:events_app/blocs/events/events_bloc.dart';

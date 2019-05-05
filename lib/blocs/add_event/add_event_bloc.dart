@@ -1,4 +1,3 @@
-import 'dart:typed_data';
 import 'package:rxdart/rxdart.dart';
 import 'package:events_app/blocs/bloc_provider.dart';
 class AddEventBloc extends BlocBase{

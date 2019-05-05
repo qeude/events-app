@@ -1,5 +1,4 @@
 import 'package:flutter/material.dart';
-import 'dart:io';
 
 import 'package:events_app/models/models.dart';
 import 'package:events_app/utils/constants.dart';

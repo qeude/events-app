@@ -38,7 +38,7 @@ class _EventsScreenState extends State<EventsScreen> {
           ],
         ),
         body: RefreshIndicator(
-            onRefresh: () async => await eventsBloc.fetchAllEvents(),
+            onRefresh: () async => eventsBloc.fetchAllEvents(),
             child: StreamBuilder<List<Event>>(
               stream: eventsBloc.allEvents,
               builder: (context, snapshot) {
