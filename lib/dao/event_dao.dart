@@ -10,6 +10,20 @@ class EventDao{
     return result;
   }
   //TODO: Add getEventById
+  Future<Event> getEventById(String id, {List<String> columns}) async {
+    final db = await dbProvider.database;
+    List<Map<String, dynamic>> result;
+    result = await db.query(eventTABLE,
+      columns: columns,
+      where: 'id = ?',
+      whereArgs: [id],
+    );
+    Event event = result.isNotEmpty
+      ? Event.fromDatabaseJson(result[0])
+      : null;
+    return event;
+  }
+
   Future<List<Event>> getEvents({List<String> columns, String query}) async{
     final db = await dbProvider.database;
     List<Map<String, dynamic>> result;

@@ -41,7 +41,8 @@ class _EventsAddEditScreenState extends State<EventsAddEditScreen> {
   @override
   Widget build(BuildContext context) {
     final eventBloc = BlocProvider.of<EventsBloc>(context);
-    eventBloc.getEventById(widget.id);
+    if(widget.id != null)
+      eventBloc.getEventById(widget.id);
     return StreamBuilder(
       stream: eventBloc.eventDetails,
       builder: (BuildContext context, snapshot) {
