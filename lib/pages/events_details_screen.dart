@@ -51,6 +51,33 @@ class _EventsDetailsScreenState extends State<EventsDetailsScreen> {
                 child: AppBar(
                   actions: <Widget>[
                     IconButton(
+                      icon: Icon(Icons.delete_forever),
+                      onPressed: () async {
+                        showDialog(
+                          context: context,
+                          builder: (BuildContext context){
+                            return AlertDialog(
+                              title: Text('Delete ${event.name}'),
+                              content: Text('You will not be able to get it back, are you sure that you want delete this event ?'),
+                              actions: <Widget>[
+                                 FlatButton(
+                                  child: Text("Cancel"),
+                                  onPressed: (){
+                                    Navigator.of(context).pop();
+                                  },
+                                ),
+                                FlatButton(
+                                  child: Text('Delete'),
+                                  onPressed: (){
+                                    eventBloc.deleteEvent(event);
+                                    Navigator.of(context).popUntil(ModalRoute.withName("/"));
+                                  },
+                                ),
+                              ],
+                            );
+                        });
+                      },),
+                    IconButton(
                         icon: Icon(Icons.create),
                         onPressed: () async => await Navigator.of(context)
                                 .push(MaterialPageRoute(builder: (_) {
