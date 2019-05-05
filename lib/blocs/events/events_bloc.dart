@@ -17,10 +17,8 @@ class EventsBloc extends BlocBase{
   }
 
   getEventById(String id) async{
-    List<Event> events =  await _eventRepository.getAllEvents();
-    Event event = events.firstWhere((elmt) => elmt.id == id, orElse:() => null);
+    Event event =  await _eventRepository.getEventById(id);
     _eventDetails.sink.add(event);
-    return event;
   }
 
   void fetchAllEvents() async{

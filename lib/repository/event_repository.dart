@@ -7,6 +7,8 @@ class EventRepository{
 
   Future getAllEvents({String query}) => eventDao.getEvents(query: query);
 
+  Future getEventById(String id) => eventDao.getEventById(id);
+  
   Future insertEvent(Event event) => eventDao.createEvent(event);
 
   Future updateEvent(Event event) => eventDao.updateEvent(event);

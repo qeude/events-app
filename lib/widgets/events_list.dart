@@ -1,8 +1,9 @@
 import 'package:flutter/material.dart';
+import 'dart:io';
 
 import 'package:events_app/models/models.dart';
 import 'package:events_app/utils/constants.dart';
-
+import 'package:events_app/utils/utils.dart';
 import 'package:events_app/pages/events_details_screen.dart';
 class EventsList extends StatelessWidget {
   final bool visible;
@@ -33,6 +34,7 @@ class BuildCard extends StatelessWidget{
   const BuildCard({this.item});
   @override
   Widget build(BuildContext context) {
+    print(item.image);
     return GestureDetector(
       onTap: () async => await Navigator.of(context).push(MaterialPageRoute(builder: (_){return EventsDetailsScreen(id: item.id);})),
       child: Card(
@@ -46,9 +48,9 @@ class BuildCard extends StatelessWidget{
           height: 350.0,
           decoration: BoxDecoration(
             image: DecorationImage(
-              image: AssetImage("images/croatia.jpg"),
+              image: eventImageProvider(item.image),
               alignment: Alignment.topCenter,
-              fit: BoxFit.fill
+              fit: BoxFit.cover
             ),
           ),
           padding: EdgeInsets.only(left: 40.0, bottom: 30.0),
