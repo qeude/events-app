@@ -1,5 +1,7 @@
 # Events App
 
+![demo](demo.gif)
+
 ## 📖 Description
 📱Flutter application to schedule and manage life events.
 App mainly developed to learn about BLoC pattern and Rx.
