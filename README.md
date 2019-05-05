@@ -1,6 +1,6 @@
 # Events App
 
-![demo](demo.gif)
+<img src="demo.gif" height="720">
 
 ## 📖 Description
 📱Flutter application to schedule and manage life events.
