@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'dart:io';
 
 import 'package:events_app/blocs/bloc_provider.dart';
 import 'package:events_app/blocs/events/events_bloc.dart';
@@ -6,7 +7,7 @@ import 'package:events_app/pages/events_add_edit_screen.dart';
 import 'package:events_app/models/models.dart';
 import 'package:events_app/utils/constants.dart';
 import 'package:events_app/utils/utils.dart';
-
+import 'package:events_app/widgets/loading_indicator.dart';
 class EventsDetailsScreen extends StatefulWidget {
   final String id;
 
@@ -64,7 +65,7 @@ class _EventsDetailsScreenState extends State<EventsDetailsScreen> {
             ],
           );
         }
-        return Stack();
+        return Container(child: LoadingIndicatorWidget(visible: true));
       },
     ));
   }
@@ -76,9 +77,9 @@ class _EventsDetailsScreenState extends State<EventsDetailsScreen> {
       child: Container(
           decoration: BoxDecoration(
             image: DecorationImage(
-                image: MemoryImage(event.image),
+                image: eventImageProvider(event.image),
                 alignment: Alignment.topCenter,
-                fit: BoxFit.fill),
+                fit: BoxFit.cover),
           ),
           padding: EdgeInsets.only(left: 40.0, bottom: 250.0),
           alignment: Alignment.bottomLeft,

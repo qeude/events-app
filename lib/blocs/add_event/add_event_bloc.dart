@@ -15,8 +15,8 @@ class AddEventBloc extends BlocBase{
   Observable<DateTime> get eventDate => _dateSubject.stream;
 
 
-  final PublishSubject<Uint8List> _imageSubject = PublishSubject<Uint8List>();
-  Observable<Uint8List> get eventImage => _imageSubject.stream;
+  final PublishSubject<String> _imageSubject = PublishSubject<String>();
+  Observable<String> get eventImage => _imageSubject.stream;
 
 
 
@@ -24,7 +24,7 @@ class AddEventBloc extends BlocBase{
   void changeChecklist(final bool status) => _checklistSubject.sink.add(status);
   void changeLocation(final bool status) => _locationSubject.sink.add(status);
   void changeEventDate(final DateTime date) => _dateSubject.sink.add(date);
-  void changeEventImage(final Uint8List image) => _imageSubject.sink.add(image);
+  void changeEventImage(final String image) => _imageSubject.sink.add(image);
   
   @override
   dispose(){

@@ -8,7 +8,7 @@ import 'package:uuid/uuid.dart';
 class Event {
   final bool complete;
   final String id;
-  final Uint8List image;
+  final String image;
   final String name;
   final String description;
   final DateTime date;
@@ -31,7 +31,7 @@ class Event {
   factory Event.fromDatabaseJson(Map<String, dynamic> data) => Event(
       data['name'],
       DateTime.parse(data['date']),
-      base64.decode(data['image']),
+      data['image'],
       id:data['id'], 
       description: data['description'],
       complete: data['complete'] == 0 ? false : true,
@@ -40,7 +40,7 @@ class Event {
   Map<String, dynamic> toDatabaseJson() => {
     "id": this.id,
     "name":this.name,
-    "image": base64.encode(this.image),
+    "image": this.image,
     "description": this.description,
     "date":this.date.toString(), 
     "complete": this.complete ==false ? 0 : 1,

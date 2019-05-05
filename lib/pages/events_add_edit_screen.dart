@@ -1,7 +1,4 @@
-import 'dart:typed_data';
-import 'dart:convert';
 import 'package:flutter/material.dart';
-import 'dart:io';
 import 'package:image_picker/image_picker.dart';
 
 import 'package:events_app/blocs/bloc_provider.dart';
@@ -64,13 +61,13 @@ class _EventsAddEditScreenState extends State<EventsAddEditScreen> {
                     child: ListView(
                   shrinkWrap: true,
                   children: <Widget>[
-                    StreamBuilder<Uint8List>(
+                    StreamBuilder<String>(
                         stream: addEventBloc.eventImage,
                         builder: (context, snapshot) {
                           if (snapshot.hasData) {
                             return _buildEventImage(context, snapshot.data);
                           }
-                          return _buildChoseImage();
+                          return _buildSelectImage();
                         }),
                     StreamBuilder<bool>(
                       stream: addEventBloc.hasDescription,
@@ -95,13 +92,18 @@ class _EventsAddEditScreenState extends State<EventsAddEditScreen> {
                 top: 0.0,
                 left: 0.0,
                 right: 0.0,
-                child: AppBar(
-                  actions: <Widget>[
-                    StreamBuilder(
-                      stream: addEventBloc.eventImage,
-                      builder: (context, snapshot) {
-                        if (!snapshot.hasData) return Container();
-                        return IconButton(
+                child: StreamBuilder(
+                  stream : addEventBloc.eventImage,
+                  builder: (context, snapshot){
+                    return AppBar(
+                      backgroundColor: Colors.transparent, //No more green
+                      elevation: 0.0,
+                      actions: snapshot.hasData ? <Widget>[
+                        IconButton(icon: Icon(Icons.image),
+                        onPressed: () => {
+                          getImage()
+                        },),
+                        IconButton(
                           icon: Icon(Icons.check),
                           onPressed: () {
                             if (this._checkAllField()) {
@@ -113,17 +115,14 @@ class _EventsAddEditScreenState extends State<EventsAddEditScreen> {
                               else
                                 eventBloc.updateEvent(Event(this.eventNameController.text, this.eventDate,snapshot.data, description: description, id:widget.id));
                               print(
-                                  'Saving ${this.eventDate} ${eventNameController.text}');
+                                  'Saving ${this.eventDate} ${eventNameController.text} ${snapshot.data}');
                               Navigator.pop(context);
                             }
                           },
-                        );
-                      },
-                    )
-                  ],
-                  backgroundColor: Colors.transparent, //No more green
-                  elevation: 0.0, //Shadow gone
-                ),
+                        )
+                      ] : <Widget>[],
+                    );
+                  })
               ),
             ],
           ),
@@ -132,13 +131,13 @@ class _EventsAddEditScreenState extends State<EventsAddEditScreen> {
     );
   }
 
-  Widget _buildEventImage(BuildContext context, Uint8List image) {
+  Widget _buildEventImage(BuildContext context, String image) {
     return Container(
         decoration: BoxDecoration(
           image: DecorationImage(
-              image: MemoryImage(image),
+              image: eventImageProvider(image),
               alignment: Alignment.topCenter,
-              fit: BoxFit.fill),
+              fit: BoxFit.cover),
         ),
         padding: EdgeInsets.only(left: 40.0, bottom: 245.0),
         alignment: Alignment.bottomLeft,
@@ -215,25 +214,32 @@ class _EventsAddEditScreenState extends State<EventsAddEditScreen> {
         ));
   }
 
-  Future getImage() async {
+  void getImage() async {
     var image = await ImagePicker.pickImage(source: ImageSource.gallery);
     if (image != null) {
-      List<int> imageBytes = image.readAsBytesSync();
-      addEventBloc.changeEventImage(imageBytes);
+      String imagePath = image.path;
+      String resultPath = await saveImage(imagePath);
+      addEventBloc.changeEventImage(resultPath);
     }
   }
 
-  Widget _buildChoseImage() {
+  Widget _buildSelectImage() {
     return GestureDetector(
       child: Container(
-          padding: EdgeInsets.only(left: 40.0, bottom: 245.0),
           decoration: BoxDecoration(color: Colors.black12),
           alignment: Alignment.bottomLeft,
           height: MediaQuery.of(context).size.height - 30.0,
           child: Center(
-            child: Text('Chose Image'),
+            child: Row(
+              mainAxisAlignment: MainAxisAlignment.center,
+              children: <Widget>[
+              Icon(Icons.image, size: 40,),
+              Text('Tap to select an image ...', style: TextStyle(fontSize: 20),),
+            ],)
           )),
-      onTap: () => getImage(),
+      onTap: () {
+        getImage();
+      },
     );
   }
 
