@@ -23,6 +23,43 @@ class _EventsScreenState extends State<EventsScreen> {
           centerTitle: true,
           backgroundColor: Colors.transparent,
           elevation: 0.0,
+          leading: StreamBuilder(
+              stream: eventsBloc.allEvents,
+              builder: (BuildContext context, snapshot) {
+                if (!snapshot.hasData ||
+                    (snapshot.hasData && snapshot.data.length == 0))
+                  return Container();
+                return IconButton(
+                  icon: Icon(Icons.delete),
+                  color: Colors.red,
+                  onPressed: () {
+                    showDialog(
+                        context: context ,
+                        builder: (BuildContext context) {
+                          return AlertDialog(
+                            title: Text('Delete all'),
+                            content: Text(
+                                'Are you sure you want to delete all ? You will not be able to retrieve events.'),
+                            actions: <Widget>[
+                              FlatButton(
+                                child: Text("Cancel"),
+                                onPressed: () {
+                                  Navigator.of(context).pop();
+                                },
+                              ),
+                              FlatButton(
+                                child: Text('Delete'),
+                                onPressed: () {
+                                  eventsBloc.deleteAllEvents();
+                                  Navigator.of(context).pop();
+                                },
+                              ),
+                            ],
+                          );
+                        });
+                  },
+                );
+              }),
           title: Text(
             'Events',
             style: TextStyle(color: Colors.black),
@@ -33,12 +70,15 @@ class _EventsScreenState extends State<EventsScreen> {
                 Icons.add,
                 color: Colors.black,
               ),
-              onPressed: () async => await Navigator.of(context).push(MaterialPageRoute(builder: (_) {return EventsAddEditScreen();})),
+              onPressed: () async => await Navigator.of(context)
+                      .push(MaterialPageRoute(builder: (_) {
+                    return EventsAddEditScreen();
+                  })),
             )
           ],
         ),
         body: RefreshIndicator(
-            onRefresh: () async => await eventsBloc.fetchAllEvents(),
+            onRefresh: () async => eventsBloc.fetchAllEvents(),
             child: StreamBuilder<List<Event>>(
               stream: eventsBloc.allEvents,
               builder: (context, snapshot) {
@@ -52,8 +92,7 @@ class _EventsScreenState extends State<EventsScreen> {
                           ),
                           EventsList(
                             visible: snapshot.hasData,
-                            eventsList:
-                                snapshot.hasData ? snapshot.data : [],
+                            eventsList: snapshot.hasData ? snapshot.data : [],
                           ),
                         ],
                       ),

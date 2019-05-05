@@ -10,7 +10,6 @@ class DatabaseProvider {
   Database _database;
 
   Future<Database> get database async{
-    //deleteDb();
     if (_database != null) return _database;
     _database = await createDatabase();
     return _database;
@@ -41,7 +40,6 @@ class DatabaseProvider {
         "description TEXT,"
         "image TEXT,"
         "date TEXT,"
-        "complete INTEGER "
         ")");
   }
 }

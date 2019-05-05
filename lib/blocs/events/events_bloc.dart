@@ -39,6 +39,11 @@ class EventsBloc extends BlocBase{
 
   }
 
+  void deleteAllEvents(){
+    _eventRepository.deleteAllEvents();
+    _eventsFetcher.sink.add([]);
+  }
+
   void updateEvent(Event updatedEvent){
       final updateEvents = events.map((elmt){       
         return elmt.id == updatedEvent.id ? updatedEvent : elmt;}).toList();

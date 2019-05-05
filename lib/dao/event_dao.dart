@@ -9,7 +9,6 @@ class EventDao{
     var result = db.insert(eventTABLE, event.toDatabaseJson());
     return result;
   }
-  //TODO: Add getEventById
   Future<Event> getEventById(String id, {List<String> columns}) async {
     final db = await dbProvider.database;
     List<Map<String, dynamic>> result;
@@ -26,6 +25,7 @@ class EventDao{
 
   Future<List<Event>> getEvents({List<String> columns, String query}) async{
     final db = await dbProvider.database;
+    await db.delete(eventTABLE, where: 'date < ?', whereArgs: [DateTime.now().toString()]);
     List<Map<String, dynamic>> result;
     if(query != null){
       if(query.isNotEmpty){
