@@ -52,8 +52,6 @@ class _EventsAddEditScreenState extends State<EventsAddEditScreen> {
           if(event.description != null && event.description.trim().isNotEmpty){
             addEventBloc.changeDescription(true);
           }
-          // addEventBloc.changeDescription(
-          //     event.description != null && event.description.trim().isNotEmpty);
           addEventBloc.changeEventImage(event.image);
           eventNameController.text = event.name;
         }
@@ -115,7 +113,7 @@ class _EventsAddEditScreenState extends State<EventsAddEditScreen> {
                                       if (this._checkAllField()) {
                                         String description = this.hasDescription
                                             ? this.descriptionController.text
-                                            : null;
+                                            : "";
                                         if (widget.id == null)
                                           eventBloc.addEvent(Event(
                                               this.eventNameController.text,
