@@ -13,7 +13,7 @@ import 'package:events_app/blocs/add_event/add_event_bloc.dart';
 
 class EventsAddEditScreen extends StatefulWidget {
   final String id;
-
+  
   EventsAddEditScreen({this.id});
   @override
   _EventsAddEditScreenState createState() => _EventsAddEditScreenState();
@@ -31,6 +31,7 @@ class _EventsAddEditScreenState extends State<EventsAddEditScreen> {
   TextEditingController eventNameController = new TextEditingController();
   TextEditingController descriptionController = new TextEditingController();
   final AddEventBloc addEventBloc = AddEventBloc();
+  EventsBloc eventBloc;
 
   @override
   void dispose() {
@@ -39,9 +40,14 @@ class _EventsAddEditScreenState extends State<EventsAddEditScreen> {
   }
 
   @override
-  Widget build(BuildContext context) {
-    final eventBloc = BlocProvider.of<EventsBloc>(context);
+  void didChangeDependencies() {
+    super.didChangeDependencies();
+    eventBloc = BlocProvider.of<EventsBloc>(context);
     if (widget.id != null) eventBloc.getEventById(widget.id);
+  }
+
+  @override
+  Widget build(BuildContext context) {
     return StreamBuilder(
       stream: eventBloc.eventDetails,
       builder: (BuildContext context, snapshot) {

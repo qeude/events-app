@@ -6,13 +6,12 @@ class EventDao{
 
   Future<int> createEvent(Event event) async{
     final db = await dbProvider.database;
-    var result = db.insert(eventTABLE, event.toDatabaseJson());
+    final result = db.insert(eventTABLE, event.toDatabaseJson());
     return result;
   }
   Future<Event> getEventById(String id, {List<String> columns}) async {
     final db = await dbProvider.database;
-    List<Map<String, dynamic>> result;
-    result = await db.query(eventTABLE,
+    final result = await db.query(eventTABLE,
       columns: columns,
       where: 'id = ?',
       whereArgs: [id],
@@ -26,7 +25,7 @@ class EventDao{
   Future<List<Event>> getEvents({List<String> columns, String query}) async{
     final db = await dbProvider.database;
     await db.delete(eventTABLE, where: 'date < ?', whereArgs: [DateTime.now().toString()]);
-    List<Map<String, dynamic>> result;
+    var result;
     if(query != null){
       if(query.isNotEmpty){
         result= await db.query(eventTABLE, 
@@ -48,7 +47,7 @@ class EventDao{
   Future<int> updateEvent(Event event) async {
     final db = await dbProvider.database;
 
-    var result = await db.update(eventTABLE, event.toDatabaseJson(),
+    final result = await db.update(eventTABLE, event.toDatabaseJson(),
         where: "id = ?", whereArgs: [event.id]);
 
     return result;
@@ -56,14 +55,14 @@ class EventDao{
 
   Future<int> deleteEvent(String id) async {
     final db = await dbProvider.database;
-    var result = await db.delete(eventTABLE, where: 'id = ?', whereArgs: [id]);
+    final result = await db.delete(eventTABLE, where: 'id = ?', whereArgs: [id]);
 
     return result;
   }
 
    Future deleteAllEvents() async {
     final db = await dbProvider.database;
-    var result = await db.delete(
+    final result = await db.delete(
       eventTABLE,
     );
 
