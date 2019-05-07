@@ -7,6 +7,8 @@ import 'package:events_app/models/models.dart';
 import 'package:events_app/utils/constants.dart';
 import 'package:events_app/utils/utils.dart';
 import 'package:events_app/widgets/loading_indicator.dart';
+import 'package:flutter_map/flutter_map.dart';
+import 'package:latlong/latlong.dart';
 class EventsDetailsScreen extends StatefulWidget {
   final String id;
 
@@ -17,10 +19,16 @@ class EventsDetailsScreen extends StatefulWidget {
 }
 
 class _EventsDetailsScreenState extends State<EventsDetailsScreen> {
+  EventsBloc eventBloc;
+  @override
+  void didChangeDependencies() {
+    super.didChangeDependencies();
+    eventBloc = BlocProvider.of<EventsBloc>(context);
+    eventBloc.getEventById(widget.id);
+  }
+
   @override
   Widget build(BuildContext context) {
-    final eventBloc = BlocProvider.of<EventsBloc>(context);
-    eventBloc.getEventById(widget.id);
     return Scaffold(
         body: StreamBuilder(
       stream: eventBloc.eventDetails,
@@ -40,6 +48,7 @@ class _EventsDetailsScreenState extends State<EventsDetailsScreen> {
                             event.description.trim().isNotEmpty)
                         ? _buildDescriptionSection(context, event)
                         : Container(),
+                    event.hasLocation ? _buildLocationSection(context) : Container()
                   ],
                 ))
               ]),
@@ -150,6 +159,59 @@ class _EventsDetailsScreenState extends State<EventsDetailsScreen> {
             child: Text(event.description),
             padding: EdgeInsets.only(top: 20.0),
           )
+        ],
+      ),
+    );
+  }
+  _buildLocationSection(BuildContext context) {
+    return Container(
+      alignment: Alignment.topLeft,
+      padding:
+          EdgeInsets.only(top: 20.0, left: 40.0, right: 40.0, bottom: 20.0),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: <Widget>[
+          Container(
+            child: ListTile(
+                contentPadding: EdgeInsets.all(0),
+                title: Text(
+                  'Location',
+                  style: TextStyle(fontSize: 25.0, fontWeight: FontWeight.w500),
+                )),
+          ),
+          Container(
+              height: 150,
+              child: ClipRRect(
+                  borderRadius: BorderRadius.circular(15.0),
+                  child: FlutterMap(
+                    options: MapOptions(
+                      interactive: false,
+                      center: LatLng(48.8534, 2.3488),
+                      minZoom: 13.0,
+                      maxZoom: 13.0,
+                      zoom: 13.0,
+                    ),
+                    layers: [
+                      TileLayerOptions(
+                          urlTemplate:
+                              'https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png',
+                          subdomains: ['a', 'b', 'c']),
+                      MarkerLayerOptions(markers: <Marker>[
+                        Marker(
+                          width: 50.0,
+                          height: 50.0,
+                          point: LatLng(48.8534, 2.3488),
+                          builder: (ctx) => Container(
+                                child: Icon(
+                                  Icons.location_on,
+                                  color: Colors.red,
+                                  size: 50.0,
+                                ),
+                              ),
+                        )
+                      ])
+                    ],
+                  ))),
         ],
       ),
     );

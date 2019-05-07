@@ -12,6 +12,7 @@ App mainly developed to learn about BLoC pattern and Rx.
 * [path_provider](https://pub.dartlang.org/packages/path_provider)
 * [image_picker](https://pub.dartlang.org/packages/image_picker)
 * [image](https://pub.dartlang.org/packages/image)
+* [flutter_map](https://pub.dev/packages/flutter_map)
 
 ## 🛠 Installation
 1. `git clone https://github.com/qeude/events-app.git`
