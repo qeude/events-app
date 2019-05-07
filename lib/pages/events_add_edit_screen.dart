@@ -55,12 +55,7 @@ class _EventsAddEditScreenState extends State<EventsAddEditScreen> {
         Event event;
         if (snapshot.hasData) {
           event = snapshot.data;
-          addEventBloc.changeEventDate(event.date);
-          if (event.description != null &&
-              event.description.trim().isNotEmpty) {
-            addEventBloc.changeDescription(true);
-          }
-          addEventBloc.changeEventImage(event.image);
+          addEventBloc.initEvent(event);
           eventNameController.text = event.name;
         }
         return Scaffold(
