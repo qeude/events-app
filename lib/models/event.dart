@@ -8,18 +8,20 @@ class Event {
   final String name;
   final String description;
   final DateTime date;
-
-  Event(this.name, this.date, this.image, {String description='', String id})
+  final bool hasLocation;
+  Event(this.name, this.date, this.image, {String description='', String id, bool hasLocation = false})
     : this.description =description,
-      this.id = id ?? Uuid().v4();
+      this.id = id ?? Uuid().v4(),
+      this.hasLocation = hasLocation;
 
-  Event copyWith({String id, String name,String image, String description, DateTime date}){
+  Event copyWith({String id, String name,String image, String description, DateTime date, bool hasLocation}){
     return Event(
         name ?? this.name,
         date ?? this.date,
         image ?? this.image,
         description: description ?? this.description,
-        id: id ?? this.id
+        id: id ?? this.id,
+        hasLocation: hasLocation ?? this.hasLocation
     );
   }
 
@@ -29,6 +31,7 @@ class Event {
       data['image'],
       id:data['id'], 
       description: data['description'],
+      hasLocation: data['hasLocation'] == 0 ? false: true
   );
 
   Map<String, dynamic> toDatabaseJson() => {
@@ -37,6 +40,7 @@ class Event {
     "image": this.image,
     "description": this.description,
     "date":this.date.toString(), 
+    "hasLocation": this.hasLocation == false ? 0 : 1
   };
   @override
   int get hashCode =>  name.hashCode ^ date.hashCode ^ image.hashCode ^ description.hashCode ^ id.hashCode;

@@ -40,6 +40,7 @@ class DatabaseProvider {
         "name TEXT,"
         "description TEXT,"
         "image TEXT,"
+        "hasLocation INTEGER,"
         "date TEXT"
         ")");
   }

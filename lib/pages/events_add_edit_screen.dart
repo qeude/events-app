@@ -10,6 +10,9 @@ import 'package:events_app/utils/constants.dart';
 import 'package:events_app/utils/utils.dart';
 import 'package:events_app/models/models.dart';
 import 'package:events_app/blocs/add_event/add_event_bloc.dart';
+import 'package:flutter_map/flutter_map.dart';
+import 'package:latlong/latlong.dart';
+import 'package:events_app/keys.dart';
 
 class EventsAddEditScreen extends StatefulWidget {
   final String id;
@@ -31,7 +34,7 @@ class _EventsAddEditScreenState extends State<EventsAddEditScreen> {
   TextEditingController eventNameController = new TextEditingController();
   TextEditingController descriptionController = new TextEditingController();
   final AddEventBloc addEventBloc = AddEventBloc();
-
+  EventsBloc eventBloc;
   @override
   void dispose() {
     addEventBloc.dispose();
@@ -39,9 +42,14 @@ class _EventsAddEditScreenState extends State<EventsAddEditScreen> {
   }
 
   @override
-  Widget build(BuildContext context) {
-    final eventBloc = BlocProvider.of<EventsBloc>(context);
+  void didChangeDependencies() {
+    super.didChangeDependencies();
+    eventBloc = BlocProvider.of<EventsBloc>(context);
     if (widget.id != null) eventBloc.getEventById(widget.id);
+  }
+
+  @override
+  Widget build(BuildContext context) {
     return StreamBuilder(
       stream: eventBloc.eventDetails,
       builder: (BuildContext context, snapshot) {
@@ -49,7 +57,8 @@ class _EventsAddEditScreenState extends State<EventsAddEditScreen> {
         if (snapshot.hasData) {
           event = snapshot.data;
           addEventBloc.changeEventDate(event.date);
-          if(event.description != null && event.description.trim().isNotEmpty){
+          if (event.description != null &&
+              event.description.trim().isNotEmpty) {
             addEventBloc.changeDescription(true);
           }
           addEventBloc.changeEventImage(event.image);
@@ -86,8 +95,18 @@ class _EventsAddEditScreenState extends State<EventsAddEditScreen> {
                         return Container();
                       },
                     ),
-                    _buildAddSection('location'),
-                    _buildAddSection('checklist'),
+                    StreamBuilder<bool>(
+                      stream: addEventBloc.hasLocation,
+                      builder: (context, snapshot) {
+                        if (snapshot.hasData) {
+                          this.hasLocation = snapshot.data;
+                          if (snapshot.data)
+                            return _buildLocationSection(context);
+                          return _buildAddSection('location');
+                        }
+                        return Container();
+                      },
+                    ),
                   ],
                 ))
               ]),
@@ -119,16 +138,18 @@ class _EventsAddEditScreenState extends State<EventsAddEditScreen> {
                                               this.eventNameController.text,
                                               this.eventDate,
                                               snapshot.data,
-                                              description: description));
+                                              description: description,
+                                              hasLocation: this.hasLocation));
                                         else
                                           eventBloc.updateEvent(Event(
                                               this.eventNameController.text,
                                               this.eventDate,
                                               snapshot.data,
                                               description: description,
-                                              id: widget.id));
+                                              id: widget.id,
+                                              hasLocation: this.hasLocation));
                                         print(
-                                            'Saving ${this.eventDate} ${eventNameController.text} ${snapshot.data}');
+                                            'Saving ${this.eventDate} ${this.hasLocation} ${eventNameController.text} ${snapshot.data}');
                                         Navigator.pop(context);
                                       }
                                     },
@@ -277,11 +298,6 @@ class _EventsAddEditScreenState extends State<EventsAddEditScreen> {
                 addEventBloc.changeDescription(true);
               }
               break;
-            case ('checklist'):
-              {
-                addEventBloc.changeChecklist(true);
-              }
-              break;
             case ('location'):
               {
                 addEventBloc.changeLocation(true);
@@ -318,7 +334,7 @@ class _EventsAddEditScreenState extends State<EventsAddEditScreen> {
                     color: Colors.black,
                   ),
                   onPressed: () {
-                    descriptionController.text = ""; 
+                    descriptionController.text = "";
                     addEventBloc.changeDescription(false);
                   },
                 ),
@@ -338,6 +354,69 @@ class _EventsAddEditScreenState extends State<EventsAddEditScreen> {
             ),
             padding: EdgeInsets.only(top: 20.0),
           )
+        ],
+      ),
+    );
+  }
+
+  _buildLocationSection(BuildContext context) {
+    return Container(
+      alignment: Alignment.topLeft,
+      padding:
+          EdgeInsets.only(top: 20.0, left: 40.0, right: 40.0, bottom: 20.0),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: <Widget>[
+          Container(
+            child: ListTile(
+                contentPadding: EdgeInsets.all(0),
+                trailing: IconButton(
+                  icon: Icon(
+                    Icons.remove,
+                    color: Colors.black,
+                  ),
+                  onPressed: () {
+                    addEventBloc.changeLocation(false);
+                  },
+                ),
+                title: Text(
+                  'Location',
+                  style: TextStyle(fontSize: 25.0, fontWeight: FontWeight.w500),
+                )),
+          ),
+          Container(
+              height: 150,
+              child: ClipRRect(
+                  borderRadius: BorderRadius.circular(15.0),
+                  child: FlutterMap(
+                    options: MapOptions(
+                      interactive: false,
+                      center: LatLng(48.8534, 2.3488),
+                      minZoom: 13.0,
+                      maxZoom: 13.0,
+                      zoom: 13.0,
+                    ),
+                    layers: [
+                      TileLayerOptions(
+                          urlTemplate:
+                              'https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png',
+                          subdomains: ['a', 'b', 'c']),
+                      MarkerLayerOptions(markers: <Marker>[
+                        Marker(
+                          width: 50.0,
+                          height: 50.0,
+                          point: LatLng(48.8534, 2.3488),
+                          builder: (ctx) => Container(
+                                child: Icon(
+                                  Icons.location_on,
+                                  color: Colors.red,
+                                  size: 50.0,
+                                ),
+                              ),
+                        )
+                      ])
+                    ],
+                  ))),
         ],
       ),
     );
