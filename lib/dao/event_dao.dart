@@ -9,6 +9,7 @@ class EventDao{
     var result = db.insert(eventTABLE, event.toDatabaseJson());
     return result;
   }
+
   Future<Event> getEventById(String id, {List<String> columns}) async {
     final db = await dbProvider.database;
     List<Map<String, dynamic>> result;
@@ -45,19 +46,17 @@ class EventDao{
       : [];
     return events;
   }
+  
   Future<int> updateEvent(Event event) async {
     final db = await dbProvider.database;
-
     var result = await db.update(eventTABLE, event.toDatabaseJson(),
         where: "id = ?", whereArgs: [event.id]);
-
     return result;
   }
 
   Future<int> deleteEvent(String id) async {
     final db = await dbProvider.database;
     var result = await db.delete(eventTABLE, where: 'id = ?', whereArgs: [id]);
-
     return result;
   }
 
@@ -66,7 +65,6 @@ class EventDao{
     var result = await db.delete(
       eventTABLE,
     );
-
     return result;
   }
 }

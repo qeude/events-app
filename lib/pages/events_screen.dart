@@ -14,10 +14,16 @@ class EventsScreen extends StatefulWidget {
 
 class _EventsScreenState extends State<EventsScreen> {
   EventsBloc eventsBloc;
+
   @override
-  Widget build(BuildContext context) {
+  void didChangeDependencies() {
+    super.didChangeDependencies();
     eventsBloc = BlocProvider.of<EventsBloc>(context);
     eventsBloc.fetchAllEvents();
+  }
+
+  @override
+  Widget build(BuildContext context) {
     return Scaffold(
         appBar: AppBar(
           centerTitle: true,

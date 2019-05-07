@@ -9,6 +9,7 @@ class Event {
   final String description;
   final DateTime date;
   final bool hasLocation;
+  
   Event(this.name, this.date, this.image, {String description='', String id, bool hasLocation = false})
     : this.description =description,
       this.id = id ?? Uuid().v4(),

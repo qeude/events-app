@@ -13,11 +13,8 @@ class AddEventBloc extends BlocBase{
   final PublishSubject<DateTime> _dateSubject =PublishSubject<DateTime>();
   Observable<DateTime> get eventDate => _dateSubject.stream;
 
-
   final PublishSubject<String> _imageSubject = PublishSubject<String>();
   Observable<String> get eventImage => _imageSubject.stream;
-
-
 
   void changeDescription(final bool status) => _descriptionSubject.sink.add(status);
   void changeChecklist(final bool status) => _checklistSubject.sink.add(status);
