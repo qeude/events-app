@@ -12,7 +12,6 @@ import 'package:events_app/models/models.dart';
 import 'package:events_app/blocs/add_event/add_event_bloc.dart';
 import 'package:flutter_map/flutter_map.dart';
 import 'package:latlong/latlong.dart';
-import 'package:events_app/keys.dart';
 
 class EventsAddEditScreen extends StatefulWidget {
   final String id;

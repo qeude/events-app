@@ -45,3 +45,9 @@ Future<String> saveImage(String initialImagePath) async{
   File(resultPath).writeAsBytesSync(Im.encodePng(imageCompressed));
   return resultPath;
 }
+
+deleteImage(String pathToDelete) async{
+  Directory appDirectory = await getApplicationDocumentsDirectory();
+  File imageFile = File(join(appDirectory.path, pathToDelete));
+  imageFile.deleteSync();
+}
