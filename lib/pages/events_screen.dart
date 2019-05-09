@@ -19,11 +19,13 @@ class _EventsScreenState extends State<EventsScreen> {
   void didChangeDependencies() {
     super.didChangeDependencies();
     eventsBloc = BlocProvider.of<EventsBloc>(context);
-    eventsBloc.fetchAllEvents();
+    
   }
+  
 
   @override
   Widget build(BuildContext context) {
+    eventsBloc.fetchAllEvents();
     return Scaffold(
         appBar: AppBar(
           centerTitle: true,

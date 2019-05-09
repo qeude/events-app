@@ -32,7 +32,7 @@ class Event {
       data['image'],
       id:data['id'], 
       description: data['description'],
-      hasLocation: data['hasLocation'] == 0 ? false: true
+      hasLocation: data['haslocation'] == 0 ? false: true
   );
 
   Map<String, dynamic> toDatabaseJson() => {
@@ -41,10 +41,10 @@ class Event {
     "image": this.image,
     "description": this.description,
     "date":this.date.toString(), 
-    "hasLocation": this.hasLocation == false ? 0 : 1
+    "haslocation": this.hasLocation == false ? 0 : 1
   };
   @override
-  int get hashCode =>  name.hashCode ^ date.hashCode ^ image.hashCode ^ description.hashCode ^ id.hashCode;
+  int get hashCode =>  name.hashCode ^ date.hashCode ^ image.hashCode ^ hasLocation.hashCode ^description.hashCode ^ id.hashCode;
 
   @override
   bool operator ==(Object other) =>
@@ -55,5 +55,6 @@ class Event {
           image == other.image &&
           date == other.date &&
           description == other.description &&
+          hasLocation == other.hasLocation &&
           id == other.id;
 }

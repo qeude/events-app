@@ -237,7 +237,7 @@ class _EventsAddEditScreenState extends State<EventsAddEditScreen> {
         ));
   }
 
-  void getImage() async {
+  Future getImage() async {
     var image = await ImagePicker.pickImage(source: ImageSource.gallery);
     if (image != null) {
       String imagePath = image.path;

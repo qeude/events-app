@@ -26,7 +26,7 @@ class EventDao{
   Future<List<Event>> getEvents({List<String> columns, String query}) async{
     final db = await dbProvider.database;
     await db.delete(eventTABLE, where: 'date < ?', whereArgs: [DateTime.now().toString()]);
-    var result;
+    List<Map<String, dynamic>> result;
     if(query != null){
       if(query.isNotEmpty){
         result= await db.query(eventTABLE, 
@@ -40,9 +40,7 @@ class EventDao{
     else {
         result = await db.query(eventTABLE, columns: columns, orderBy: 'date');
     }
-    List<Event> events = result.isNotEmpty
-      ? result.map((item) => Event.fromDatabaseJson(item)).toList()
-      : [];
+    List<Event> events = result.isNotEmpty ? result.map((item) => Event.fromDatabaseJson(item)).toList() : [];
     return events;
   }
   
