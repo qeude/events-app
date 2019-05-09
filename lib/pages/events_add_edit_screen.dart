@@ -10,8 +10,6 @@ import 'package:events_app/utils/constants.dart';
 import 'package:events_app/utils/utils.dart';
 import 'package:events_app/models/models.dart';
 import 'package:events_app/blocs/add_event/add_event_bloc.dart';
-import 'package:flutter_map/flutter_map.dart';
-import 'package:latlong/latlong.dart';
 
 class EventsAddEditScreen extends StatefulWidget {
   final String id;
@@ -23,13 +21,9 @@ class EventsAddEditScreen extends StatefulWidget {
 
 class _EventsAddEditScreenState extends State<EventsAddEditScreen> {
   bool hasDescription = false;
-
   bool hasLocation = false;
-
   bool hasChecklist = false;
-
   DateTime eventDate;
-
   TextEditingController eventNameController = new TextEditingController();
   TextEditingController descriptionController = new TextEditingController();
   final AddEventBloc addEventBloc = AddEventBloc();
@@ -119,7 +113,7 @@ class _EventsAddEditScreenState extends State<EventsAddEditScreen> {
                               ? <Widget>[
                                   IconButton(
                                     icon: Icon(Icons.image),
-                                    onPressed: () => {getImage()},
+                                    onPressed: () async => {await getImage()},
                                   ),
                                   IconButton(
                                     icon: Icon(Icons.check),
@@ -233,7 +227,7 @@ class _EventsAddEditScreenState extends State<EventsAddEditScreen> {
                             if (snapshot.hasData) {
                               this.eventDate = snapshot.data;
                               return Text(
-                                  "In ${getTimeUntilEvent(snapshot.data)}",
+                                  "In ${getTimeUntilEvent(this.eventDate)}",
                                   style: eventDateTextStyle);
                             }
                             return Text('Add Date', style: eventDateTextStyle);
@@ -272,8 +266,8 @@ class _EventsAddEditScreenState extends State<EventsAddEditScreen> {
               ),
             ],
           ))),
-      onTap: () {
-        getImage();
+      onTap: () async {
+        await getImage();
       },
     );
   }
@@ -379,39 +373,7 @@ class _EventsAddEditScreenState extends State<EventsAddEditScreen> {
                   style: TextStyle(fontSize: 25.0, fontWeight: FontWeight.w500),
                 )),
           ),
-          Container(
-              height: 150,
-              child: ClipRRect(
-                  borderRadius: BorderRadius.circular(15.0),
-                  child: FlutterMap(
-                    options: MapOptions(
-                      interactive: false,
-                      center: LatLng(48.8534, 2.3488),
-                      minZoom: 13.0,
-                      maxZoom: 13.0,
-                      zoom: 13.0,
-                    ),
-                    layers: [
-                      TileLayerOptions(
-                          urlTemplate:
-                              'https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png',
-                          subdomains: ['a', 'b', 'c']),
-                      MarkerLayerOptions(markers: <Marker>[
-                        Marker(
-                          width: 50.0,
-                          height: 50.0,
-                          point: LatLng(48.8534, 2.3488),
-                          builder: (ctx) => Container(
-                                child: Icon(
-                                  Icons.location_on,
-                                  color: Colors.red,
-                                  size: 50.0,
-                                ),
-                              ),
-                        )
-                      ])
-                    ],
-                  ))),
+          buildEventLocation()
         ],
       ),
     );

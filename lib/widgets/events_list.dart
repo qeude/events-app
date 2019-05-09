@@ -34,7 +34,7 @@ class BuildCard extends StatelessWidget{
   @override
   Widget build(BuildContext context) {
     return GestureDetector(
-      onTap: () async => await Navigator.of(context).push(MaterialPageRoute(builder: (_){return EventsDetailsScreen(id: item.id);})),
+      onTap: () async => await Navigator.of(context).push(MaterialPageRoute(builder: (_){return EventsDetailsScreen(id: item.id, image: item.image, name: item.name, date: item.date,);})),
       child: Card(
         shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(15.0)),
         semanticContainer: true,
