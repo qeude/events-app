@@ -24,12 +24,12 @@ class AddEventBloc extends BlocBase{
   void changeEventImage(final String image) => _imageSubject.sink.add(image);
   
   void initEvent(Event event){
-    changeEventDate(event.date);
     if (event.description != null && event.description.trim().isNotEmpty) {
       changeDescription(true);
     }
     changeLocation(event.hasLocation);
     changeEventImage(event.image);
+    changeEventDate(event.date);
   }
   @override
   dispose(){

@@ -226,7 +226,7 @@ class _EventsAddEditScreenState extends State<EventsAddEditScreen> {
                             if (snapshot.hasData) {
                               this.eventDate = snapshot.data;
                               return Text(
-                                  "In ${getTimeUntilEvent(snapshot.data)}",
+                                  "In ${getTimeUntilEvent(this.eventDate)}",
                                   style: eventDateTextStyle);
                             }
                             return Text('Add Date', style: eventDateTextStyle);
