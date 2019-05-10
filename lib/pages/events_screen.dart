@@ -19,7 +19,6 @@ class _EventsScreenState extends State<EventsScreen> {
   void didChangeDependencies() {
     super.didChangeDependencies();
     eventsBloc = BlocProvider.of<EventsBloc>(context);
-    
   }
   
 

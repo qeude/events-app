@@ -29,11 +29,11 @@ class _EventsDetailsScreenState extends State<EventsDetailsScreen> {
   void didChangeDependencies() {
     super.didChangeDependencies();
     eventBloc = BlocProvider.of<EventsBloc>(context);
-    eventBloc.getEventById(widget.id);
   }
 
   @override
   Widget build(BuildContext context) {
+    eventBloc.getEventById(widget.id);
     return Scaffold(
         body: StreamBuilder(
       stream: eventBloc.eventDetails,

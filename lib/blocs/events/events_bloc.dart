@@ -26,7 +26,7 @@ class EventsBloc extends BlocBase {
   }
 
   void fetchAllEvents() async {
-    List<Event> events = await getEvents();
+    events = await getEvents();
     _eventsFetcher.sink.add(events);
   }
 
